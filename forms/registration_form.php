@@ -116,8 +116,7 @@ if(isset($_POST['btnOK'])){
 
  }
 }
-else{
-    //создаем объект формы
+ //создаем объект формы
 
     include_once __DIR__ . '/../classes/class_form.php';
     include_once 'forms/registration_form.php';
@@ -180,7 +179,6 @@ else{
 
 
     //echo $my_form->toString();
-}
 
     
   
