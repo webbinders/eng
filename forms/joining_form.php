@@ -1,10 +1,12 @@
 <?php
+include_once __DIR__ . '/../classes/class_form.php';
 
   //переменная содержащая адрес текущей страницы
             $_SESSION['urlForButton']="http://".$_SERVER['HTTP_HOST'].$_SERVER ['PHP_SELF']."?".SID;
             $my_form=new HtmlForm(array(
                 'class'=>'vhod',
-                'action'=>'vhodOK.php',
+                'action'=>'./joining.php',
+                'method'=>'POST',
             ));
 
             $email=new TextElement(array(
@@ -13,6 +15,11 @@
                 'size'=>15
             ));
             $my_form->addInputForm($email);
+            
+            $msg_email = new pElement(array(
+                'text' => isset($_POST['msg']['email']) ? $_POST['msg']['email'] : '',
+            ));
+            $my_form->addInputForm($msg_email);
 
 
 
@@ -22,6 +29,11 @@
                 'label'=>'Пароль<br>'
             ));
             $my_form->addInputForm($psw);
+            
+            $msg_psw = new pElement(array(
+                'text' => isset($_POST['msg']['psw']) ? $_POST['msg']['psw'] : '',
+            ));
+            $my_form->addInputForm($msg_psw);
 
             $btnOK=new ButtonElement(array(
                 'type'=>'submit',
@@ -44,10 +56,10 @@
             $my_form->addInputForm($forgot);
 
             $reg=new linkElement(array(
-                'href'=>"http://".$_SERVER['SERVER_NAME'].dirname($_SERVER['PHP_SELF']).'/registration/registration.php',
+                'href'=>"http://".$_SERVER['SERVER_NAME'].dirname($_SERVER['PHP_SELF']).'/registration.php',
                 'text'=>'Регистрация'
             ));
             $my_form->addInputForm($reg);
 
-            echo $my_form->toString();
+            
 ?>

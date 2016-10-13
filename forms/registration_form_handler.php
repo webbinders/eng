@@ -5,11 +5,11 @@
   if(!isset($succs)) $succs=0;
   if(!isset($_POST['msg'])) $_POST['msg']=array('email'=>'','login'=>'','psw'=>'','avatar'=>'');
   $_SESSION['access'] = 0;
+  if (!isset($_SESSION['lang'])) $_SESSION['lang'] = 'ru';
   
 //подгрузка словаря
-//$word_arr= parse_ini_file($_SESSION['lang'].".ini");
-//подгрузка словаря
-$word_arr= parse_ini_file("ru.ini");
+$word_arr= parse_ini_file($_SESSION['lang'].".ini");
+
   
 //если форма отображается повторно
 if(isset($_POST['btnOK'])){

@@ -1,6 +1,7 @@
 
         <?php
         session_start();
+        $_SESSION['lang'] = 'ru';
         include './classes/pageClass.php'; //подключаем файл класса страницы
         
         //если пользователь входит впервые, предложить войти или зарегистрироваться
@@ -8,7 +9,7 @@
             
         }
         else{
-            //если пользователь еще не авторизирвался
+            /*/если пользователь еще не авторизирвался
             //отображаем интерфейс авторизации
             $log_in = 
 <<<LOGIN
@@ -16,10 +17,10 @@
             <a href='joining.php'>Вход</a><br>
             <a href='registration.php'>Регистрация</a><br>
             <a href='forgot.php'>Забыли пароль</a><br>
-LOGIN;
+LOGIN;*/
         }
         //если пользователь вошел дать ему знать
-        $pageObj = new pageClass($log_in);
+        $pageObj = new pageClass();
         echo $pageObj->build_Page();
         
         ?>
