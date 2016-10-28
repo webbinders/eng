@@ -99,12 +99,29 @@ if(isset($_POST['btnOK'])){
          $result = mysql_query("INSERT INTO users(email,psw) VALUES ('$email','$pass');");
          //если регистрация прошла успешно
          if(mysql_affected_rows()>0){
+             
+            //создаем персональную таблицу в бд
+            $table_name = strval(mysql_insert_id());
+            $query_new_tab = <<<TAB
+            CREATE TABLE IF NOT EXISTS `$table_name` (
+            `id` int(11) NOT NULL COMMENT 'id из таблицы thesaurus',
+            `answers` int(11) DEFAULT '0' COMMENT 'количество правильных ответов',
+            `shows` int(11) DEFAULT '1' COMMENT 'количество показов всего',
+            `level` int(11) DEFAULT '0' COMMENT 'answers/show',
+            `date` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'дата последнего показа',
+            `examples` char(255) DEFAULT NULL COMMENT 'список id примеров использования слова в таблицы thesaurus',
+            PRIMARY KEY (`id`)
+          ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+TAB;
+             $res = mysql_query($query_new_tab) ;
+             
+             if(!$res) die('Ошибка соединения: ' . mysql_error());
              //отображаем личный кабинет
              print 'отображаем личный кабинет';
              //устанавливаем переменные сессии
              $_SESSION['access'] = 1;
-                //переходим в личный кабинет
-            // header('Location: http://'.$_SERVER['HTTP_HOST'].'/'. $_SERVER['DOCUMENT_ROOT'] .'/office.php');
+             //переходим в личный кабинет
+             header("Location: http://".$_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF']).'/office.php');
          }
          else{//если во время добавления пользователя произошел сбой
               if(!$result) die('Ошибка соединения: ' . mysql_error());
