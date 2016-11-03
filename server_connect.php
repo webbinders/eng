@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 //Подключаемся к серверу
          
         //подключаемся к серверу
@@ -14,4 +14,13 @@
         }
         //echo 'Успешно соединились<br>';
         mysql_query("SET NAMES utf8"); 
+        
+        function queryRun($query ,$msgErr){
+            $result = mysql_query($query);
+            if (!$result) {
+                die($msgErr . ' : ' . mysql_error());
+                }
+            return $result;
+            }
+        
  ?>   
