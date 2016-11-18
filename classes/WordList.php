@@ -58,7 +58,7 @@ class WordList{
      */
     function splitText($text){
          //разбиваем текст на слова и помещаем их в массив $words_arr
-        $text=preg_replace('/(^\s*\')|(\s\')|(\'\W)|(\'$)|(\'\s)|\d+/',',',$text);
+        $text=preg_replace('/(^\s*\')|(\s\')|(\'\W)|(\'\s)|\d+|[^(\w\’\')]|(\'*$)/',',',$text);
         $words_arr = explode(',',$text);
         
         //для каждого слова подсчитывем его частоту в тексте
