@@ -324,7 +324,7 @@ class WordList{
             $query = "INSERT INTO `$table_name` (`id`,`shows`,`answers`) VALUES ";
             $words_arr = array();
             foreach($word_id as $id => $frequency){
-            $query .= "('$id','$frequency',1),";
+            $query .= "('$id','$frequency',0),";
             $words_arr[$id]=$id;
             }
             $query = substr( $query, 0, -1);//убираем последнюю запятую
@@ -367,6 +367,15 @@ class Word{
     function setNative($string){$this->native = $string;}
     function setFrequency($var){$this->frequency = $var;}
     /*
+     * Добавляет (обновляет) перевод 
+     */
+    function updateNative($translation){
+        $query = "UPDATE `thesaurus` SET `native`= '$translation' WHERE `id` = $this->id; ";
+        //echo $query;
+        $result = queryRun($query,"Ошибка обновления таблицы 'thesaurus' во время выполнения метода updateNative()"); 
+        $this->native = $translation;
+    }
+    /*
      * Увеличивает число показов слова на 1 и устанавливает текущую дату
      */
     function addShow() {
@@ -375,7 +384,37 @@ class Word{
         $query = "UPDATE $table_name SET `shows`=$this->shows,`level`=$this->answers/$this->shows,`studDate`= NOW() WHERE `id` = $this->id;";
         $result = queryRun($query,"Ошибка обновления таблицы $table_name во время выполнения метода addShow()"); 
     }
-    
+    /*
+     * Добавляет слово в список для изучения
+     */
+    function addToStudList(){
+        //усли слово не принадлежит списку для изучения
+        if (!$this->stud){
+            $table_name = 'u'.$_SESSION['user_id'];
+            $level=$this->answers/$this->shows;
+            //создать запрос для установки stud =1 в личной таблице
+            $query = "UPDATE $table_name SET `shows`=$this->shows+1,`level`= $level,`studDate`= NOW(), `stud`= 1 WHERE `id` = $this->id;";
+            $result = queryRun($query,"Ошибка обновления таблицы $table_name во время выполнения метода addToStudList()"); 
+            //считываем строку содержащую список для изучения из таблицы users для текущего пользователя
+            $user_id = $_SESSION['user_id'];
+            $query = "SELECT `studList` FROM `users` WHERE `id`= $user_id;"; 
+            $result = queryRun($query,"Ошибка чтения таблицы `users`во время выполнения метода addToStudList()");
+            $row = mysql_fetch_row($result);
+            $strId = $row[0];
+            $arrId = explode(',', $strId);
+            if (!in_array($this->id, $arrId)){//только если слово не входит в список для изучения (страхуемся от дубликатов)
+                $arrId[] = $this->id;
+                $strId = implode(",", $arrId);
+                $query ="UPDATE `users` SET `studList`='$strId' WHERE `id`= $user_id";
+                $result = queryRun($query,"Ошибка обновления таблицы `users` во время выполнения метода addToStudList()"); 
+            }
+            
+
+            $this->stud =1;
+        }
+       
+    }
+            
     function  __construct($property_arr){
         
         
@@ -411,7 +450,7 @@ class Word{
         else{
             //то выборку производим по слову. Если его не находим, то добавляем
             
-            $query = "SELECT * FROM thesaurus, `$table_name` WHERE `foreign` = '".$property_arr['foreign']."'";
+            $query = "SELECT * FROM thesaurus WHERE `foreign` = '".$property_arr['foreign']."'";
             $result = queryRun($query,'error in constructor');
 
             //если слово не найдено
@@ -438,7 +477,7 @@ class Word{
                 ///Определяем id добавленной записи
                 $id = mysql_insert_id();
                 ///Создаем запрос на добавление в личную таблицу
-                $query = "INSERT INTO $tablename (`id`,`shows`,`answers`,`level`,`examples`) VALUES". "('$id','$frequency','0','0',,);";
+                $query = "INSERT INTO $table_name (`id`,`shows`,`answers`,`level`,`examples`) VALUES". "('$id','$frequency','0','0',,);";
                 ///Выполняем запрос
                 $result = queryRun($query,'Ошибка соединения');  
                 $this->id = $id;
@@ -490,7 +529,7 @@ class Word{
         $this->foreign = $property_arr['foreign'];
         if(isset($property_arr['native'])) $this->native = $property_arr['native'];
 
-        $this->frequency = $property_arr['frequency'];
+        if(isset($property_arr['frequency'])) $this->frequency = $property_arr['frequency'];
         
     }
     function getNative(){
