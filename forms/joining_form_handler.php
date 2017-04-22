@@ -75,6 +75,7 @@ if(isset($_POST['btnOK'])){
           if ($_POST['psw'] == $row['psw']){//если пароль совпадает
               //устанавливаем переменные сессии
               $_SESSION['access'] = 1;
+              $_SESSION[user_id] = $row['id'];
               //перенаправляемся в офис  
           }
           else{

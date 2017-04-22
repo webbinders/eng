@@ -1,0 +1,14 @@
+/* 
+    Created on : Nov 30, 2016, 12:00:04 AM
+    Author     : Ser
+*/
+.active_mode{
+    font-size: 20px;
+    background-color: red;
+    
+}
+.hidden, p .hidden{
+    display: none;
+}
+
+

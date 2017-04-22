@@ -77,7 +77,7 @@ foreach($word_map as $foreign => $frequency){
 //print_r($word_id);
 
 //формируем запрос
-$table_name = $_SESSION['user_id'];
+$table_name = 'u'.$_SESSION['user_id'];
 $query = "INSERT INTO `$table_name` (`id`,`shows`,`answers`) VALUES ";
 foreach($word_id as $id => $frequency){
 	 $query .= "('$id','$frequency',1),";      

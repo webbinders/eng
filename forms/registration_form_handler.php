@@ -97,19 +97,21 @@ if(isset($_POST['btnOK'])){
      else{
          //добавляем нового пользователя в БД
          $result = mysql_query("INSERT INTO users(email,psw) VALUES ('$email','$pass');");
+         $_SESSION['user_id'] = mysql_insert_id();
          //если регистрация прошла успешно
          if(mysql_affected_rows()>0){
              
             //создаем персональную таблицу в бд
-            $table_name = strval(mysql_insert_id());
+            $table_name = 'u'.strval(mysql_insert_id());
             $query_new_tab = <<<TAB
             CREATE TABLE IF NOT EXISTS `$table_name` (
             `id` int(11) NOT NULL COMMENT 'id из таблицы thesaurus',
             `answers` int(11) DEFAULT '0' COMMENT 'количество правильных ответов',
             `shows` int(11) DEFAULT '1' COMMENT 'количество показов всего',
-            `level` int(11) DEFAULT '0' COMMENT 'answers/show',
-            `date` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'дата последнего показа',
+            `level` float DEFAULT '0' COMMENT 'answers/show',
+            `studDate` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'дата последнего показа',
             `examples` char(255) DEFAULT NULL COMMENT 'список id примеров использования слова в таблицы thesaurus',
+            `stud` tinyint(1) DEFAULT '0' ,
             PRIMARY KEY (`id`)
           ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 TAB;
@@ -120,6 +122,7 @@ TAB;
              print 'отображаем личный кабинет';
              //устанавливаем переменные сессии
              $_SESSION['access'] = 1;
+             
              //переходим в личный кабинет
              header("Location: http://".$_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF']).'/office.php');
          }

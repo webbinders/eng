@@ -37,6 +37,15 @@ function  __construct ($arr_param) {
         //array_push($this->inputForms, $input_form);
     }
 }
+//удаляет элемент $input_form из формы еще не проверял
+function delInputForm($input_form) {
+    $form_array = $this->elementsForm;
+    foreach ($form_array as $key => $value) {
+        if($value == $input_form){
+            unset($this->elementsForm[$key]);
+        }
+    }
+}
  function toString () {
      $form_array = $this->elementsForm;
      $return_string = "";
@@ -62,6 +71,7 @@ abstract class HtmlFormElement{
     var $value;
     var $htmlString;
     var $label;
+    var $class;
     
     function __construct($arr_param) {
         //проверяем соответствие параметра допустимому значению
@@ -101,13 +111,13 @@ class TextElement extends HtmlFormElement{
     var $size;
     function __construct($arr_param){
         parent::__construct($arr_param);
-           if  (isset($this->required))
+        if  (isset($this->required))
             $req='required';
         else
             $req='';
         $this->htmlString=
-                '<p>'.$this->label.
-                   " <input name='$this->name' size='$this->size' value='$this->value' type='$this->type' $req></p>";
+                "<p class='$this->class'>".$this->label.
+                   " <input class='$this->class' name='$this->name' size='$this->size' value='$this->value' type='$this->type' $req></p>";
         }           
        
                                                                 
@@ -116,6 +126,7 @@ class TextElement extends HtmlFormElement{
     
     class TextPswElement extends HtmlFormElement{
     var $size;
+    
     function __construct($arr_param){
         parent::__construct($arr_param);
         $this->type='password';
@@ -126,18 +137,83 @@ class TextElement extends HtmlFormElement{
         $this->htmlString=
                 '<p>'.$this->label.
                 
-                "<input name='$this->name' size='$this->size' type='$this->type' $req ></p>";
+                "<input class='$this->class' name='$this->name' size='$this->size' type='$this->type' $req ></p>";
         }
        
                                                                 
                                                                 
     } 
     
+    class SelectElement extends HtmlFormElement{
+        var $size;
+        var $multiple;
+        var $autofocus;
+        function __construct($arr_param){
+            parent::__construct($arr_param);
+            if (isset($this -> multiple)){
+                $mult = 'multiple';
+            }
+            else {            
+                $mult = '';
+            }
+            if (isset($this -> autofocus)){            
+                $autofoc = autofocus;
+            }
+            else{
+                $autofoc = '';
+            }
+            
+            $this->htmlString = 
+                '<p>'.$this->label.
+                "<SELECT ".
+                "class = '$this->class'  ".
+                "NAME = '$this->name'  ".
+                "VALUE = '$this->value' ".
+                "SIZE = '$this->size' ".
+                "$mult $autofoc>".
+                "</SELECT>";             
+                    
+        
+        }
+        
+        /*
+         * Добаляет опцию в конец списка
+         */
+        function addOption($option) {
+            //изменяем свойство htmlString списка
+            //для этого разделяем строку содержащую htmlString на две части
+            //между которыми вставляем добавляем вставляемую опцию.            
+            $this->htmlString = substr( $this->htmlString, 0, -strlen("</SELECT>")) . $option->htmlString . "</SELECT>";
+        }
+        
+    }
+    
+    class OptionElement extends HtmlFormElement{
+        var $selected;
+        function __construct($arr_param){
+            parent::__construct($arr_param);
+            if (isset($this -> selected)){            
+                $selected = 'selected';
+            }
+            else{
+                $selected = '';
+            }
+            $this->htmlString =
+                '<p>'.$this->label.
+                "<OPTION ".
+                "class = '$this->class'  ".
+                "NAME = '$this->name'  ".
+                "VALUE = '$this->value' ".
+                "</OPTION>";    
+        }            
+    }
+    
 class TextAreaElement extends HtmlFormElement{
  //устанавливаем недостающие параметры
  	var $rows;
 	var $cols;
 	var $class;
+        var $placeholder;
 	
     function __construct($arr_param){
     parent::__construct($arr_param);
@@ -152,9 +228,10 @@ class TextAreaElement extends HtmlFormElement{
         "NAME='$this->name'  ".
         "ROWS='$this->rows'   ".
         "COLS='$this->cols'   ".
-         "VALUE= '$this->value' ".
+        "placeholder = '$this->placeholder' ".
+        "VALUE= '$this->value' ".
         ">".
-      
+      $this->value.
         "</TEXTAREA>";
 
 
@@ -186,7 +263,7 @@ class InpButtonElement extends HtmlFormElement{
  * Кнопка создваемая с помощью тега BUTTON
  */
 class ButtonElement extends HtmlFormElement{
-    var $handler;
+    var $formaction;
     function __construct($arr_param){
     parent::__construct($arr_param);
     $_type=  $this->type;
@@ -194,7 +271,9 @@ class ButtonElement extends HtmlFormElement{
         $this->htmlString=
                 "<BUTTON  " .
                 "formaction='$this->formaction' ".
+                "CLASS='$this->class' ".
                 "NAME='$this->name'>". 
+                
                 "$this->value".
                 "</BUTTON>".
                 "\n";

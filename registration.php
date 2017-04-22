@@ -7,7 +7,7 @@
         
         //если пользователь вошел дать ему знать
         if(isset($_SESSION['access']) && $_SESSION['access'] == 1){
-            $_SESSION['msg'] = "<div class = 'msg'>Вы успешно зарегистрировались</div>";
+            $_SESSION['msg'] = "<div class = 'msg'>Вы успешно зарегистрировались как пользователь с эмейлом" . $_SESSION['email'] . "</div>";
             
             header("Location: http://".$_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF']).'/office.php');
             
