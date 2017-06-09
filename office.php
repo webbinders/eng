@@ -242,12 +242,15 @@ var_dump($dictionary);echo '<br>';*/
 
 
         }
+        if ($_SESSION['mode']=='mode_stud'){
             include_once 'forms/studing_form.php';//подключаем файл формы для изучения
             $content .= $stud_form -> toString();
-        break;
-    case 'mode_end_stud':
-        $content .= '<h1>Learning is ended for today</h1>';
-        break;
+        }
+        else{
+            $content .= '<h1>Learning is ended for today</h1>';
+        }
+        
+ 
     default:
         
         break;
