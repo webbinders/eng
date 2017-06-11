@@ -295,34 +295,15 @@ function testing($studList, $button){
                 }
                 
                 //Находим id примеров содержащих текущее слово                   
-                $idArr = $currentWord->findExamples($currentWord->foreign);  
-                //удаляем из списка примеров id текущего слова, т.к. метод findExamples включает и само слово в спимок примеров
-                if (in_array($currentWord->id, $idArr)) {
-                    foreach ($idArr as $key => $value) {
-                        if ($idArr[$key]==$currentWord->id){
-                            unset($idArr[$key]);
-                            break;
-                        }
-                    }
-                }
-                        
-                if(sizeof($idArr)){
-                    //Для каждого элемента массива содержащего id  примеров
-                    foreach ($idArr as $valueId) {
-                        //Создаем объект exampleObj класса Word
-                        $property_arr['id'] = $valueId;
-                        $exampleObj = new Word($property_arr);
-                        //Добавить его в список примеров
-                        $exampleList[$valueId]=$exampleObj;
-                    }
-                }
+                $exampleList = $currentWord->findExamples($currentWord->foreign);  
+
                 
                 //Сериализируем список
-                if (isset($exampleList)) $_SESSION['exampleList'] = serialize($exampleList);
+                if (sizeof($exampleList)) $_SESSION['exampleList'] = serialize($exampleList);
                 
              
                 $_SESSION['currentWord'] = $currentWord->foreign;
-                echo '<br> examplesList :'.$currentWord->examples.'<br>';
+                //echo '<br> examplesList :'.$currentWord->examples.'<br>';
                 break;
                 
             //---------------------------------------------   
@@ -549,7 +530,7 @@ function testing($studList, $button){
  * Преобразует строку вида '2016-12-16 22:45:53'  в метку времени
  */
 function getTimestamp($strDate) {
-echo $strDate;
+//echo $strDate;
     $dateAndTime = explode(' ', $strDate);
     $dateArr = explode('-', $dateAndTime[0]);
     $timeArr = explode(':', $dateAndTime[1]);

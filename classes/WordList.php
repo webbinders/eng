@@ -58,6 +58,7 @@ class StudList{
             $result = queryRun($query, "ошибка 333 при составлении списка для изучения");
 
                 while ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
+                    //var_dump($row);
                     $word = new Word($row);
                     $this->addWord($word);
                 }           
@@ -83,10 +84,10 @@ class StudList{
     function getNewStudList($user_id, $count){
         $strNewStudList = '';
         $remainingWords = $count;
-        $step = 0.25;
+        $step = 0.01;
         $tableName = 'u'.$user_id;
-        for($level = 0; $level < 1 ; $level = $level + $step){
-            $top = $level + 0.25;
+        for($level = 0; $level <= 1 ; $level = $level + $step){
+            $top = $level + $step ;
             //создаем запрос на определение заданного количества записей с наименьшим уровнем освоения
             $query = "SELECT * FROM $tableName WHERE stud = 0 AND level BETWEEN $level  AND $top  LIMIT 0, $remainingWords";        
             //выполняем запрос
@@ -114,7 +115,7 @@ class StudList{
                 }
             }
         }  
-        echo $strNewStudList;
+        //echo $strNewStudList;
         return $strNewStudList;
     }
     /*
@@ -208,7 +209,12 @@ class StudList{
 
 class WordList{
     var $wordsList;
-    var $frequencyMap; /*карта частот слов списка (список слов строится из текста. Каждое слово имеет свою частоту. Частоту слова надо знать для определения количества ответов, если пользователь не смотрел ответ*/
+    var $wordFrequencyMap; /*карта частот слов списка 
+     * (список слов строится из текста. Каждое слово имеет свою частоту. 
+     * Частоту слова надо знать для определения количества ответов, если пользователь не смотрел ответ
+     */
+    var $idFrequencyMap;//массив id слов входящих в список
+    
     /*
      * param $$text представляет собой исходный тест, из которого надо создать список слов
      */
@@ -216,13 +222,15 @@ class WordList{
          
         //разбиваем текст на слова и помещаем их в массив-карту частот
         $word_map = $this->splitText($text);
-        $this->frequencyMap = $word_map;
         
-        
+        $this->wordFrequencyMap = $word_map;
+
+
         //вносим слова в БД с одновременным собиранием их id в массив
-        $words_arr = $this->toThesaurus($word_map);
-        if (count($words_arr)>0){
-            $this->toPersonalTab($words_arr);
+        $this->idFrequencyMap = $this->toThesaurus($word_map);
+
+        if (count($this->idFrequencyMap)>0){
+            $this->toPersonalTab($this->idFrequencyMap);
 
             //создаем объект словаря по id-шникам слов
             //для этого для каждого id создаем объект-слово
@@ -231,7 +239,7 @@ class WordList{
             //формируем один запрос для выборки сразу всех слов текста из БД
             $queryToThesaurus = "SELECT * FROM thesaurus WHERE id IN (";
             $midlePartQuery = '';
-            foreach($words_arr as $id => $frequency){
+            foreach($this->idFrequencyMap as $id => $frequency){
                 $midlePartQuery .= "'$id',";
 
             }
@@ -239,23 +247,32 @@ class WordList{
             $midlePartQuery =  substr( $midlePartQuery, 0, -1);
             $queryToThesaurus .= $midlePartQuery .");";
 
+
             $resFromThesaurus = queryRun($queryToThesaurus, "WordList Ошибка соединения: ");
 
 
             while ($row = mysql_fetch_array($resFromThesaurus,MYSQL_ASSOC)) {
-                
+
+
                 $word = new Word($row);
-                
+
                 $this->addWord($word);
             }
             $n=0;
-        }/*
+        }
+        
+        
+        /*
         echo '<br>WordList<br>';
         var_dump($this);
         echo '<br>end constructor WordList <br>';*/
             
         
      }
+     
+
+
+
     /*
      * Разбивает текст на слова и подсчитывает частоту слов в тексте
      * Возвращает массив $word_map[$word]=$frequency
@@ -263,8 +280,14 @@ class WordList{
     function splitText($text){
         //заменяем альтернативные апострофы на правильный
         $text=preg_replace('/\’/','\'',$text);
+        
+        $text=preg_replace('/\“/','"',$text);
+        $text=preg_replace('/\”/','"',$text);
         //удаляем все небуквенные символы кроме апострофа
         
+        
+        // Заменяем кирилические символы пробелами
+        $text=preg_replace('/[а-яА-ЯёЁ"]/','',$text);
          //разбиваем текст на слова и помещаем их в массив $words_arr
         $text=preg_replace('/(^\s*\')|(\s\')|(\'\W)|(\'\s)|\d+|[^(\w\’\')]|(\'*$)|[^\'\w]/',',',$text);
         $words_arr = explode(',',$text);
@@ -375,14 +398,79 @@ class Word{
     function setForeign($string){$this->foreign = $string;}
     function setNative($string){$this->native = $string;}
     function setFrequency($var){$this->frequency = $var;}
+    
+        /*
+     * Найти примеры использования слова или нескольких слов
+     * 
+     */
+    function findExamples($text){
+        //echo $text;
+        $wordList = new WordList($text);
+        //var_dump($wordList);
+        //если список слов из одного слова
+        if(sizeof($wordList->wordsList) ==1){
+            //берем идентификаторы примеров со свойства examples слова
+            $text = addslashes(trim($text));
+            $word = $wordList->wordsList[stripcslashes ($text)];
+            if(strlen($word->examples)>0){
+                $resArr = explode(',', $word->examples) ;
+            }
+            else{
+                $resArr = array();
+            }
+        }
+        else{
+            //если $text больше чем из одного слова
+            if(sizeof($wordList->wordsList) > 1){
+                $word = reset($wordList->wordsList);
+                $resArr = explode(',', $word->examples) ;
+                foreach ($wordList->wordsList as $key => $word) {
+                    //находим схождение или пересечение результирующего массива и текущего
+                    $currentArr = explode(',', $word->examples) ;
+                    $resArr = array_intersect($resArr, $currentArr);
+                    if(sizeof($resArr)==0) break;//дальше можно не продолжать одно из слов не используется совместно с рассмотренными словами
+                }
+            }
+            
+            
+        }
+        //удаляем из списка примеров id текущего слова, т.к. метод findExamples включает и само слово в спимок примеров
+        if (in_array($word->id, $resArr)) {
+            foreach ($resArr as $key => $value) {
+                if ($idArr[$key]==$word->id){
+                    unset($idArr[$key]);
+                    break;
+                }
+            }
+        }   
+        
+        if(sizeof($resArr)){
+            //Для каждого элемента массива содержащего id  примеров
+            foreach ($resArr as $valueId) {
+                //Создаем объект exampleObj класса Word
+                $property_arr['id'] = $valueId;
+                $exampleObj = new Word($property_arr);
+                //Добавить его в список примеров
+                $exampleList[$valueId]=$exampleObj;
+            }
+            return $exampleList;
+        }
+        else{
+            return array();
+        }
+        
+    }
+    
     /*
      * Добавляет (обновляет) перевод 
      */
     function updateNative($translation){
+        $this->native = $translation;
+        $translation = htmlentities($translation, ENT_QUOTES);
         $query = "UPDATE `thesaurus` SET `native`= '$translation' WHERE `id` = $this->id; ";
         //echo $query;
         $result = queryRun($query,"Ошибка обновления таблицы 'thesaurus' во время выполнения метода updateNative()"); 
-        $this->native = $translation;
+        
     }
     /*
      * Увеличивает число показов слова на 1 и устанавливает текущую дату
@@ -402,6 +490,7 @@ class Word{
             $table_name = 'u'.$_SESSION['user_id'];
             $this->shows++;
             $level=$this->answers/$this->shows;
+            $this->stud =1;
             //создать запрос для установки stud =1 в личной таблице
             $query = "UPDATE $table_name SET `shows`=$this->shows,`level`= $level,`studDate`= NOW(), `stud`= 1 WHERE `id` = $this->id;";
             $result = queryRun($query,"Ошибка обновления таблицы $table_name во время выполнения метода addToStudList()"); 
@@ -411,13 +500,13 @@ class Word{
             $result = queryRun($query,"Ошибка чтения таблицы `users`во время выполнения метода addToStudList()");
             
             $arrId=array();
-                $row = mysql_fetch_row($result);
-                $strId = $row[0];
-                if ($strId!=''){/*без этой проверки в начале строки образуется запятая. 
-                 * Т.е мы не делаем элемент массива содержащий пустую строку, 
-                 * после которого потом вставится запятая и в итоге мы получим запятую а начале строки*/
-                    $arrId = explode(',', $strId);
-                }
+            $row = mysql_fetch_row($result);
+            $strId = $row[0];
+            if ($strId!=''){/*без этой проверки в начале строки образуется запятая. 
+             * Т.е мы не делаем элемент массива содержащий пустую строку, 
+             * после которого потом вставится запятая и в итоге мы получим запятую а начале строки*/
+                $arrId = explode(',', $strId);
+            }
                 
             
 
@@ -429,7 +518,7 @@ class Word{
             }
             
 
-            $this->stud =1;
+            
         }
         return $this;
        
@@ -437,7 +526,7 @@ class Word{
             
     function  __construct($property_arr){
         
-        
+        //var_dump($property_arr);
         $table_name = 'u'.$_SESSION['user_id'];
         
         //Добавляем слово в тезарус, если его там еще нет
@@ -453,20 +542,21 @@ class Word{
             
             //если запись не найдена сообщаем о проблеме
             if (mysql_num_rows($result) == 0){
-                echo 'error';
+                //echo 'error';
                 die('Нет id = '.$id . mysql_error());
             }
             
             $row = mysql_fetch_array($result);
             //в соответствии с переданными параметрами устанавливаем свойства слова
-            $this->foreign = $row['foreign'];
+            $this->foreign = html_entity_decode($row['foreign']);
             $this->frequency = $row['frequency'];
+            $this->examples = $row['examples'];
            
             if (isset($property_arr['native'])){
-                $this->native = $row['native'].'\n'.$property_arr['native'];
+                $this->native = html_entity_decode($row['native']).'\n'.$property_arr['native'];
             }
             else {
-                $this->native = $row['native'];                
+                $this->native = html_entity_decode($row['native']);                
             }
             
             //создаем запрос на считывание свойств слова из личной таблицы
@@ -483,14 +573,20 @@ class Word{
                 $this->level = $row['level'];
                 $this->answers = $row['answers'];
                 $this->shows = $row['shows'];
-                $this->examples = $row['examples'];
+                //$this->examples = $row['examples'];
                 $this->stud = $row['stud'];
             }
         }
         else{
             //то выборку производим по слову. Если его не находим, то добавляем
-            
-            $query = "SELECT * FROM thesaurus WHERE `foreign` = '".$property_arr['foreign']."'";
+            $foreign = addslashes(html_entity_decode($property_arr['foreign']));
+           /* echo '$foreign'.$foreign.'<br>';
+            $foreign = $property_arr['foreign'];
+            $foreign = addslashes($property_arr['foreign']);
+            $foreign = htmlentities($foreign);*/
+            //echo '$property_arr[foreign]'.$property_arr['foreign'].'<br>';
+            $query = "SELECT * FROM thesaurus WHERE `foreign` = '$foreign'";
+            //echo $query.'<br>';
             $result = queryRun($query,'error in constructor');
 
             //если слово не найдено
@@ -499,22 +595,23 @@ class Word{
                 //то добавляем слово в бд
                 
                 ///Создаем запрос на добаление в тезарус
-                $foreign = $property_arr['foreign'];
+                $foreign = addslashes(html_entity_decode($property_arr['foreign']));
+                //echo $foreign.'-------<br>';
                 if (isset ($property_arr['native']) && $property_arr['native'] != ''){
                     //если был передан перевод
-                    $native = $property_arr['native'];
-                    $query = "INSERT INTO `thesaurus` (`foreign`, `native`, `frequency`) VALUES ". "('".addslashes($foreign)."', '$native', 1);";
+                    $native = addslashes($property_arr['native']);
+                    $query = "INSERT INTO `thesaurus` (`foreign`, `native`, `frequency`) VALUES ". "('$foreign', '$native', 1);";
                 }
                 else{
                     //если введено только слово без перевода
-                    $query = "INSERT INTO `thesaurus`(`foreign`, `frequency`) VALUES ". "('".addslashes($foreign)."',1);";
+                    $query = "INSERT INTO `thesaurus`(`foreign`, `frequency`) VALUES ". "('$foreign',1);";
                     
                 }
-                
+                //echo $query;
                 
                 
                 ///Выполняем запрос
-                $result = queryRun($query,'Ошибка соединения');
+                $result = queryRun($query,'Error in time inserting in conctructor Word');
                 ///Определяем id добавленной записи
                 $id = mysql_insert_id();
                 //добавляем слово в личную таблицу с установкой свойств объекта-слово
@@ -568,7 +665,7 @@ class Word{
 
         }
         //$this->id = $property_arr['id'];
-        $this->foreign = $property_arr['foreign'];
+        if(isset($property_arr['foreign'])) $this->foreign = $property_arr['foreign'];
         if(isset($property_arr['native'])) $this->native = $property_arr['native'];
 
         if(isset($property_arr['frequency'])) $this->frequency = $property_arr['frequency'];
@@ -582,7 +679,7 @@ class Word{
     function addToPersonTab($id, $table_name){
                 ///Создаем запрос на добавление в личную таблицу
                 $query = "INSERT INTO $table_name (`id`,`shows`,`answers`,`level`, `studDate`) VALUES ". "('$id','1','0','0', NOW());";
-                echo $query.'<br>';
+                //echo $query.'<br>';
                 ///Выполняем запрос
                 $result = queryRun($query,"Ошибка при добавлении слова в  таблицу $table_name в методе addToPersonTab");  
                 $this->id = $id;
@@ -601,7 +698,8 @@ class Word{
         else{
             //формируем запрос на поиск перевода в БД
             $word = $this->foreign;
-            $query = "SELECT * FROM thesaurus WHERE `foreign` = '".addslashes($word)."' ;";
+            $query = "SELECT * FROM thesaurus WHERE `foreign` = '".  addslashes($word)."' ;";
+            //echo $query;
             
             //выполняем запрос
             $result = queryRun($query,'function getNative Ошибка доступа к таблице thesaurus');
