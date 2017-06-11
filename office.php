@@ -541,7 +541,8 @@ function getTimestamp($strDate) {
  * Если слова нет в текущем списке слов-объектов, получаем его из БД. При этом если слова нет в БД, то создаем его в БД
  */
 function getWordObjFromString($str,$dictionary){
-    $foreign = strtoupper(trim($str));
+    $str = trim($str);
+    $foreign = strtoupper($str);
     if (isset($dictionary->wordsList[$foreign])){
         $word = $dictionary->wordsList[$foreign];
     }
