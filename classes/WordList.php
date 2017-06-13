@@ -399,54 +399,16 @@ class Word{
     function setNative($string){$this->native = $string;}
     function setFrequency($var){$this->frequency = $var;}
     
-        /*
-     * Найти примеры использования слова или нескольких слов
-     * 
+   
+    /*
+     * Функция создания массива объектов-слов в соответствии с переданным массивом id слов
      */
-    function findExamples($text){
-        //echo $text;
-        $wordList = new WordList($text);
-        //var_dump($wordList);
-        //если список слов из одного слова
-        if(sizeof($wordList->wordsList) ==1){
-            //берем идентификаторы примеров со свойства examples слова
-            $text = addslashes(trim($text));
-            $word = $wordList->wordsList[stripcslashes ($text)];
-            if(strlen($word->examples)>0){
-                $resArr = explode(',', $word->examples) ;
-            }
-            else{
-                $resArr = array();
-            }
-        }
-        else{
-            //если $text больше чем из одного слова
-            if(sizeof($wordList->wordsList) > 1){
-                $word = reset($wordList->wordsList);
-                $resArr = explode(',', $word->examples) ;
-                foreach ($wordList->wordsList as $key => $word) {
-                    //находим схождение или пересечение результирующего массива и текущего
-                    $currentArr = explode(',', $word->examples) ;
-                    $resArr = array_intersect($resArr, $currentArr);
-                    if(sizeof($resArr)==0) break;//дальше можно не продолжать одно из слов не используется совместно с рассмотренными словами
-                }
-            }
+    private function buildArrWords($arrId){
+        $exampleList =  array();
+        if(sizeof($arrId)){
             
-            
-        }
-        //удаляем из списка примеров id текущего слова, т.к. метод findExamples включает и само слово в спимок примеров
-        if (in_array($word->id, $resArr)) {
-            foreach ($resArr as $key => $value) {
-                if ($idArr[$key]==$word->id){
-                    unset($idArr[$key]);
-                    break;
-                }
-            }
-        }   
-        
-        if(sizeof($resArr)){
             //Для каждого элемента массива содержащего id  примеров
-            foreach ($resArr as $valueId) {
+            foreach ($arrId as $valueId) {
                 //Создаем объект exampleObj класса Word
                 $property_arr['id'] = $valueId;
                 $exampleObj = new Word($property_arr);
@@ -454,11 +416,44 @@ class Word{
                 $exampleList[$valueId]=$exampleObj;
             }
             return $exampleList;
+        }       
+    }
+     /*
+     * Найти массив id примеров в которых используются слова текста $text
+     */
+     function findExamplesId($textAsWord){
+        $resArr = array();
+        $wordList = new WordList($textAsWord->foreign);
+
+        if(sizeof($wordList->wordsList) > 0){
+            $word = reset($wordList->wordsList);
+            if(strlen($word->examples))
+                $resArr = explode(',', $word->examples) ;
+            foreach ($wordList->wordsList as $key => $word) {
+                //находим схождение или пересечение результирующего массива и текущего
+                $currentArr = explode(',', $word->examples) ;
+                $resArr = array_intersect($resArr, $currentArr);
+                if(sizeof($resArr)==0) 
+                    break;//дальше можно не продолжать одно из слов не используется совместно с рассмотренными словами
+            }
+            //удаляем из списка примеров id текущего слова, т.к. метод findExamples включает и само слово в спимок примеров
+            if ($key = array_search($textAsWord->id, $resArr)) { 
+                unset($resArr[$key]);
+            }
         }
-        else{
-            return array();
-        }
-        
+        return $resArr;
+    }
+
+
+    /*
+     * Найти примеры использования слова или нескольких слов
+     * 
+     */
+    function findExamples($textAsWord){
+        //echo $text;
+        $arrId = $this->findExamplesId($textAsWord);
+        $exampleList = $this->buildArrWords($arrId); 
+        return $exampleList;
     }
     
     /*
@@ -543,7 +538,7 @@ class Word{
             //если запись не найдена сообщаем о проблеме
             if (mysql_num_rows($result) == 0){
                 //echo 'error';
-                die('Нет id = '.$id . mysql_error());
+                die(' id is empty :'.$id . mysql_error());
             }
             
             $row = mysql_fetch_array($result);

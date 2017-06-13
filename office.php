@@ -294,8 +294,8 @@ function testing($studList, $button){
                     $_POST['answer_text_area'] = $native;
                 }
                 
-                //Находим id примеров содержащих текущее слово                   
-                $exampleList = $currentWord->findExamples($currentWord->foreign);  
+                //Находим список примеров содержащих текущее слово                   
+                $exampleList = $currentWord->findExamples($currentWord);  
 
                 
                 //Сериализируем список
