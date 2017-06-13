@@ -419,11 +419,12 @@ class Word{
         }       
     }
      /*
-     * Найти массив id примеров в которых используются слова текста $text
+     * Найти массив id примеров в которых используются сразу все слова текста $textAsWord->foreign объекта $textAsWord класса Word
+      * @$textAsWord объект класса Word
      */
-     function findExamplesId($textAsWord){
+    private function findExamplesId(){
         $resArr = array();
-        $wordList = new WordList($textAsWord->foreign);
+        $wordList = new WordList($this->foreign);
 
         if(sizeof($wordList->wordsList) > 0){
             $word = reset($wordList->wordsList);
@@ -437,7 +438,7 @@ class Word{
                     break;//дальше можно не продолжать одно из слов не используется совместно с рассмотренными словами
             }
             //удаляем из списка примеров id текущего слова, т.к. метод findExamples включает и само слово в спимок примеров
-            if ($key = array_search($textAsWord->id, $resArr)) { 
+            if ($key = array_search($this->id, $resArr)) { 
                 unset($resArr[$key]);
             }
         }
@@ -446,13 +447,13 @@ class Word{
 
 
     /*
-     * Найти примеры использования слова или нескольких слов
+     * Найти примеры использования слова.
      * 
      */
-    function findExamples($textAsWord){
+    function findExamples(){
         //echo $text;
-        $arrId = $this->findExamplesId($textAsWord);
-        $exampleList = $this->buildArrWords($arrId); 
+        $this->examples = $this->findExamplesId($this);
+        $exampleList = $this->buildArrWords($this->examples); 
         return $exampleList;
     }
     

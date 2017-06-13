@@ -295,7 +295,7 @@ function testing($studList, $button){
                 }
                 
                 //Находим список примеров содержащих текущее слово                   
-                $exampleList = $currentWord->findExamples($currentWord);  
+                $exampleList = $currentWord->findExamples();  
 
                 
                 //Сериализируем список
