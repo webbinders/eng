@@ -112,11 +112,18 @@ var_dump($dictionary);echo '<br>';*/
             //получаем перевод слова
             $translate = $word->getNative();
             //добавляем слово в список для изучения
-            $word = $word->addToStudList();
+            $studList = $word->addToStudList();
             //Вставляем перевод в тестовое поле
             $_POST['trans_area'] = $translate;  
             
             $wordList = new WordList($_POST['word']);
+            
+                            //Находим список примеров содержащих текущее слово                   
+                $exampleList = $word->findExamples();  
+
+                
+                //Сериализируем список
+                if (sizeof($exampleList)) $_SESSION['exampleList'] = serialize($exampleList);
             
             //Добавляем id примера в поле "Примеры" слов, входящих в пример
             if(sizeof($wordList->wordsList) > 1){
@@ -157,6 +164,7 @@ var_dump($dictionary);echo '<br>';*/
             
             $word->updateNative($_POST['trans_area']);
             $_POST['word']='';
+            unset($_SESSION['exampleList']);
         }
         include_once 'forms/reading_form.php';//подключаем файл формы для чтения
        /* if (isset($_POST['btn_add']) || isset($_POST['btn_handling_text'])){
@@ -175,6 +183,7 @@ var_dump($dictionary);echo '<br>';*/
                     
             $content .= "<br>$ww";
         }*/
+        //Нажата кнопка показать примеры
 
         break;
     //---------------------

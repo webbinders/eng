@@ -27,6 +27,7 @@ if (isset($_POST['btn_start_stud']) ||
         'rows' => 2,
         'name' => 'question_text_area',
         'value' => isset($_POST['question_text_area']) ? $_POST['question_text_area'] : '',
+        'readonly' => 'readonly',
     ));
     $stud_form->addInputForm($question);
 
@@ -42,7 +43,7 @@ if (isset($_POST['btn_start_stud']) ||
     ));
     $stud_form->addInputForm($btn_ready);
 
-    if (isset($_POST['btn_ready'])) {
+    if (isset($_POST['btn_ready'])) {//если нажата кнопка "Готово", то
         //создаем текстовую область "Ответ"
         $answer = new TextAreaElement(array(
             'id' => 'answer_text_area',
@@ -56,7 +57,7 @@ if (isset($_POST['btn_start_stud']) ||
         ));
         $stud_form->addInputForm($answer);   
         
-        //если нажата кнопка "Готово", то скрыть кнопку "ГОТОВО" и показать кнопки правильно и неправильно
+        // скрыть кнопку "ГОТОВО" и показать кнопки правильно и неправильно
         $stud_form->delInputForm($btn_ready);
 
         //создаем кнопку "Неправильно" 
@@ -107,42 +108,9 @@ if (isset($_POST['btn_start_stud']) ||
     //если была нажата "Показать примеры
     if (isset($_POST['btn_view_example'])) {
         if (isset($_SESSION['exampleList'])) {
-            $exampleList = unserialize($_SESSION['exampleList']);
-            // var_dump($exampleList);
-            // если список примеров не пуст
-            if (sizeof($exampleList)) {
-                foreach ($exampleList as $value) {
-                    /* /создаем текстовую область "Пример без перевода"
-                      $example_foreign = new TextAreaElement(array(
-                      'value'=> $value->foreign,
-                      'cols' => 50,
-                      'rows' => 2,
-                      'name' => 'example_foreign[{$value->id}]',
-
-                      'class'=>  'foreign',
-
-                      ));
-                      $stud_form->addInputForm($example_foreign); */
-                    $p_foreign = new pElement(array(
-                        'name' => "example_foreign[{$value->id}]",
-                        'text' => $value->foreign,
-                        'class' => 'foreign',
-                    ));
-                    $stud_form->addInputForm($p_foreign);
-
-                    //Создаем кнопку "Показать перевод"
-                    $btn_show_native = new ButtonElement(array(
-                        'id' => 'btn_show_native',
-                        'formaction' => './office.php',
-                        'value' => 'Показать перевод',
-                        'name' => 'btn_show_native' . "[{$value->id}]",
-                        'type' => 'button',
-                    ));
-                    $stud_form->addInputForm($btn_show_native);
-                }
-                $_SESSION['exampleList'] = serialize($exampleList);
-                echo '';
-            }
+            //получаем из переменной список примеров
+        include 'functions.php';
+        dysplay_exampleS($stud_form); 
         }
         else{
             $p_msg = new pElement(array(
@@ -155,54 +123,9 @@ if (isset($_POST['btn_start_stud']) ||
     }
     //Если была нажата "Показать перевод примера"
     if (isset($_POST['btn_show_native'])) {
-        //получаем из переменной список примеров
-        $exampleList = unserialize($_SESSION['exampleList']);
-       //var_dump($exampleList);
-        //определяем нажатую кнопку
-        $btnId = key($_POST['btn_show_native']);
-        if (isset($_POST['shown'])) $shownExample = unserialize ($_POST['shown']);
-        //запоминаем нажатую кнопку в массиве
-        $shownExample[] = $btnId;
-        //print_r($shownExample);
-        
-        //Для каждого элемента списка примеров
-        foreach ($exampleList as  $value) {
-            //создаем параграф содержащий пример
-            $p_foreign = new pElement(array(
-                'name' => "example_foreign[{$value->id}]",
-                'text' => $value->foreign,
-                'class' => 'foreign',
-            ));
-            $stud_form->addInputForm($p_foreign);
-            //если он (параграф содержащий пример) не относится к массиву нажатых кнопок "Показать перевод примера"
-            if (!in_array($value->id, $shownExample)) {
-                //Создаем кнопку "Показать перевод"
-                $btn_show_native = new ButtonElement(array(
-                    'id' => 'btn_show_native',
-                    'formaction' => './office.php',
-                    'value' => 'Показать перевод',
-                    'name' => 'btn_show_native' . "[{$value->id}]",
-                    'type' => 'button',
-                ));
-                $stud_form->addInputForm($btn_show_native);
-            } else {
-                //создаем параграф содержащий перевод
-                $p_native = new pElement(array(
-                    'name' => "example_native[{$value->id}]",
-                    'text' => $value->native,
-                    'class' => 'native',
-                ));
-                $stud_form->addInputForm($p_native);
-            }
-        }
-        $serShownExample=serialize($shownExample);
-        $shownArr = new HiddenElement(array(
-            'name' => 'shown',
-            'value' => $serShownExample,
-        ));
-        $stud_form->addInputForm($shownArr);
-        $_SESSION['exampleList'] = serialize($exampleList);
-        
+    //получаем из переменной список примеров
+        include 'functions.php';
+        dysplay_example($stud_form);    
     }
 } else {
     //если еше не нажата кнопка "Начать изучение"
