@@ -194,6 +194,7 @@ var_dump($dictionary);echo '<br>';*/
             //если нажата кнопка начать изучение
             //загружаем список для изучения
             if ($_POST['newQuestions']=='') $_POST['newQuestions']=0;
+            if (preg_match('/\D/', $_POST['newQuestions'])) $_POST['newQuestions']=7;
             $studList = new StudList($_POST['newQuestions']); 
 
             //
