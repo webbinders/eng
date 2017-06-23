@@ -257,7 +257,10 @@ var_dump($dictionary);echo '<br>';*/
             $content .= $stud_form -> toString();
         }
         else{
+            //выводим сообщение, что изучение закончено
             $content .= '<h1>Learning is ended for today</h1>';
+            //уничтожаем переменную сессии содержащую список примеров, если он существует
+            if (isset($_SESSION['exampleList'])) unset($_SESSION['exampleList']);
         }
         
  
