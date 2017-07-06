@@ -8,6 +8,11 @@ include_once __DIR__ . '/../classes/class_form.php';
                 'action'=>'./joining.php',
                 'method'=>'POST',
             ));
+            
+            $title = new pElement(array(
+                'text' => "Форма Входа",
+            ));
+            $my_form->addInputForm($title);
 
             $email=new TextElement(array(
                 'label'=>'email<br>',

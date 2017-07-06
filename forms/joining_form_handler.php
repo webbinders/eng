@@ -53,7 +53,7 @@ if(isset($_POST['btnOK'])){
  else{//все заполнено корректно
      //Подключаемся к серверу
      include "server_connect.php";
-     //устанавливаем кодировку utf-8
+     /*/устанавливаем кодировку utf-8
      mysql_query("SET NAMES utf8"); 
      //выбираем базу данных
      $db_name = 'eng';
@@ -61,7 +61,7 @@ if(isset($_POST['btnOK'])){
      if (!mysql_select_db($db_name)) {
               die ('Не удалось выбрать базу  '.$db_name.'<br>' . mysql_error());
      }
-     
+     */
      //выполняем поиск по полю email
      $email = $_POST['email'];
       $result2 = mysql_query("SELECT * FROM users WHERE email = '$email'");
@@ -75,7 +75,9 @@ if(isset($_POST['btnOK'])){
           if ($_POST['psw'] == $row['psw']){//если пароль совпадает
               //устанавливаем переменные сессии
               $_SESSION['access'] = 1;
-              $_SESSION[user_id] = $row['id'];
+              $_SESSION['user_id'] = $row['id'];
+              include 'handler_functions.php';
+              $_SESSION['login'] = getLogin($row['email']);
               //перенаправляемся в офис  
           }
           else{
@@ -89,5 +91,3 @@ if(isset($_POST['btnOK'])){
  }
 }
 
-
- 
