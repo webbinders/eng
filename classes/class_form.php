@@ -57,7 +57,7 @@ function delInputForm($input_form) {
        foreach ($form_array as $input_form) {
 
         $return_string .=   $input_form->htmlString;
-        $return_string   .=  "<BR>\n";
+        $return_string   .=  "\n";
       }	     
      $return_string .= "</FORM>\n"; 
      return($return_string) ;
@@ -72,6 +72,7 @@ abstract class HtmlFormElement{
     var $htmlString;
     var $label;
     var $class;
+    var $id;
     
     function __construct($arr_param) {
         //проверяем соответствие параметра допустимому значению
@@ -91,6 +92,17 @@ abstract class HtmlFormElement{
   		 	 	
 }
     
+    
+}
+class HiddenElement extends HtmlFormElement{
+    var $name;
+    var $value;
+    function __construct($arr_param){
+        parent::__construct($arr_param);
+        
+        $this->htmlString="<input type='hidden' name='$this->name' value='$this->value'>";
+        
+    }
     
 }
 
@@ -214,24 +226,41 @@ class TextAreaElement extends HtmlFormElement{
 	var $cols;
 	var $class;
         var $placeholder;
+        var $disabled;
+        var $readonly;
 	
     function __construct($arr_param){
     parent::__construct($arr_param);
 
     $this->type='textArea';
+    if(isset($this->disabled) && $this->disabled != ''){
+        $this->disabled = 'disabled';
+    }
+    else{
+        $this->disabled = '';
+    }
+    if(isset($this->readonly) && $this->readonly !=''){
+        $this->readonly = 'readonly';
+    }
+    else{
+        $this->readonly = '';
+    }
 
 
     $this->htmlString=
         $this->label.
         "<TEXTAREA ".
+        "id = '$this->id' ".   
         "class='$this->class'  ".
         "NAME='$this->name'  ".
         "ROWS='$this->rows'   ".
         "COLS='$this->cols'   ".
         "placeholder = '$this->placeholder' ".
-        "VALUE= '$this->value' ".
+        //"VALUE= '$this->value' ".
+        $this->disabled.
+        $this->readonly.
         ">".
-      $this->value.
+      $this->value.            
         "</TEXTAREA>";
 
 
@@ -253,11 +282,11 @@ class InpButtonElement extends HtmlFormElement{
                 " VALUE='$this->value' ".
                 "NAME='$this->name'>".                    
                 "\n";
-     }
-     else{
-         die('Неверно задан тип кнопки');
-     }
-     }
+        }
+        else{
+            die('Неверно задан тип кнопки');
+        }
+    }
 }
 /*
  * Кнопка создваемая с помощью тега BUTTON
@@ -275,8 +304,7 @@ class ButtonElement extends HtmlFormElement{
                 "NAME='$this->name'>". 
                 
                 "$this->value".
-                "</BUTTON>".
-                "\n";
+                "</BUTTON>";
      }
      else{
          die('Неверно задан тип кнопки');
@@ -284,14 +312,20 @@ class ButtonElement extends HtmlFormElement{
      }
 }
 class pElement extends HtmlFormElement{
+    var $text;
     function __construct($arr_param){
     parent::__construct($arr_param);
     if (isset($this->class)) 
         $class="class='$this->class' " ;
             else 
                 $class='';
+    if (isset($this->name)){
+        $name = "name='$this->name'";
+    }else{
+        $name ='';
+    }
     $this->htmlString=  
-                 "<p $class > $this->text</p>";
+                 "<p $class $name> $this->text</p>";
     }
 }
 
