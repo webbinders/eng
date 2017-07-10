@@ -28,23 +28,24 @@ class pageClass {
      * Конструктор
      */
     function  __construct($_content = ''){
-        
+        $hat = 'Шапка сайта';
         $_roof  = 
 <<<BEGINPAGE
             <!DOCTYPE html>
             <html>
                 <head>
                     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+                    <link rel="stylesheet" type="text/css" href="./normalize.css">
                      <link rel="stylesheet" type="text/css" href="./fstyle.css">
                     <title></title>
                 </head>
-                <body><div class="roof">Шапка сайта</div>
+                <body><div class="roof">$hat </div>
 BEGINPAGE;
         //если пользователь вошел
         if(isset($_SESSION['access']) && ($_SESSION['access'] == 1)){
              $_roof .= "<a href='exit.php'>Выход</a><br>";
             //то приветствуем его 
-            $_roof .= "<div>Hello ". $_SESSION['user_id'] ."</div>";
+            $_roof .= "<div>Hello ". $_SESSION['login'] ."</div>";
             //и подключаем его БД
             
            
