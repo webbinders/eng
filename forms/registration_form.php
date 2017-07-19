@@ -8,6 +8,11 @@
         'method'=>'POST'
     ));
     
+                $title = new pElement(array(
+                'text' => "Форма регистрации",
+            ));
+            $my_form->addInputForm($title);
+    
     //создаем текстовое поле и добавляем его на форму
     $email_box=new TextElement(array(
         'label'=>'email<br>',

@@ -1,15 +1,21 @@
 <?php
-
+include_once __DIR__ . '/../classes/class_form.php';
 //создаем объект формы
 $my_form=new HtmlForm(array(
     'class'=>'forgot',
     'action'=>'forgotOK.php',
 ));
 
+            $title = new pElement(array(
+                'text' => "Форма восстановления пароля",
+            ));
+            $my_form->addInputForm($title);
+
 //создаем текстовое поле и добавляем его на форму
 $email=new TextElement(array(
     'label'=>'email<br>',
     'name'=>'email',
+    'value' => isset($_POST['email']) ? $_POST['email'] : '',
     'size'=>15
 ));
 $my_form->addInputForm($email);
@@ -23,7 +29,7 @@ $my_form->addInputForm($msg);
 $btnOK=new ButtonElement(array(
     'type'=>'submit',
     'name'=>'btnOK',
-    'value'=>'Пароль'
+    'value'=>'Получить пароль'
 ));
 $my_form->addInputForm($btnOK);    
 
@@ -36,6 +42,6 @@ $my_form->addInputForm($btnReset);
 
 
 
-echo $my_form->toString();
+
         
 ?>

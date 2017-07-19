@@ -10,13 +10,14 @@ include_once __DIR__ . '/../classes/class_form.php';
             ));
             
             $title = new pElement(array(
-                'text' => "Форма Входа",
+                'text' => "Форма входа",
             ));
             $my_form->addInputForm($title);
 
             $email=new TextElement(array(
                 'label'=>'email<br>',
                 'name'=>'email',
+                'value' => isset($_POST['email']) ? $_POST['email'] : '',
                 'size'=>15
             ));
             $my_form->addInputForm($email);
@@ -31,6 +32,7 @@ include_once __DIR__ . '/../classes/class_form.php';
             $psw=new TextPswElement(array(
                 'name'=>'psw',
                 'size'=>15,
+                'value' => isset($_POST['psw']) ? $_POST['psw'] : '',
                 'label'=>'Пароль<br>'
             ));
             $my_form->addInputForm($psw);
