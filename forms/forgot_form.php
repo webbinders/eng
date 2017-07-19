@@ -7,6 +7,7 @@ $my_form=new HtmlForm(array(
 ));
 
             $title = new pElement(array(
+                'class' => 'formtitle',
                 'text' => "Форма восстановления пароля",
             ));
             $my_form->addInputForm($title);
@@ -22,7 +23,7 @@ $my_form->addInputForm($email);
 
 //создаем текстовый абзац и добавляем его на форму
 $msg=new pElement(array(
-    'text'=>'Не верно введен адрес.'
+    'text'=>  isset($_POST['msg']['email']) ? $_POST['msg']['email'] : '',
 ));
 $my_form->addInputForm($msg);
 
