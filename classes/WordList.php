@@ -392,7 +392,7 @@ class Word{
     var $lastData;
     var $stud;
     var $level;//уровень освоения слова
-    var $examples;//список id примеров
+    var $examples;//список id примеров в виде строки с id разделенными запятыми
     var $transcription;
     var $theme;
     function setForeign($string){$this->foreign = $string;}
@@ -451,9 +451,8 @@ class Word{
      * 
      */
     function findExamples(){
-        //echo $text;
-        $this->examples = $this->findExamplesId($this);
-        $exampleList = $this->buildArrWords($this->examples); 
+        
+        $exampleList = $this->buildArrWords($this->findExamplesId($this)); 
         return $exampleList;
     }
     
@@ -544,15 +543,15 @@ class Word{
             
             $row = mysql_fetch_array($result);
             //в соответствии с переданными параметрами устанавливаем свойства слова
-            $this->foreign = html_entity_decode($row['foreign']);
+            $this->foreign = $row['foreign'];
             $this->frequency = $row['frequency'];
             $this->examples = $row['examples'];
            
             if (isset($property_arr['native'])){
-                $this->native = html_entity_decode($row['native']).'\n'.$property_arr['native'];
+                $this->native = $row['native'].'\n'.$property_arr['native'];
             }
             else {
-                $this->native = html_entity_decode($row['native']);                
+                $this->native = $row['native'];                
             }
             
             //создаем запрос на считывание свойств слова из личной таблицы
@@ -575,7 +574,7 @@ class Word{
         }
         else{
             //то выборку производим по слову. Если его не находим, то добавляем
-            $foreign = addslashes(html_entity_decode($property_arr['foreign']));
+            $foreign = addslashes($property_arr['foreign']);
            /* echo '$foreign'.$foreign.'<br>';
             $foreign = $property_arr['foreign'];
             $foreign = addslashes($property_arr['foreign']);
@@ -591,7 +590,7 @@ class Word{
                 //то добавляем слово в бд
                 
                 ///Создаем запрос на добаление в тезарус
-                $foreign = addslashes(html_entity_decode($property_arr['foreign']));
+                $foreign = addslashes($property_arr['foreign']);
                 //echo $foreign.'-------<br>';
                 if (isset ($property_arr['native']) && $property_arr['native'] != ''){
                     //если был передан перевод
