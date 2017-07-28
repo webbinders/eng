@@ -6,11 +6,15 @@
     include_once 'server_connect.php'; //соединяемся с сервером БД
     include './classes/WordList.php';
     
+    
     $CRITERION_OF_REPETITION = 10*60*60;//10 часов
          
 
         
-    $content = 'выводим код офиса';
+    $content = '';
+    if (!isset($_SESSION['mode'])) {
+        $_SESSION['mode']='';
+    }
 
     if (isset($_SESSION['msg'])){
         $content = $_SESSION['msg'] . $content;
@@ -23,19 +27,23 @@
 
     }
     if (isset($_POST['btn_read']) || !isset($_SESSION['mode'])) $_SESSION['mode'] = 'mode_read';
-    if (isset($_POST['btn_stud'])){
+    if (isset($_POST['btn_stud']) || isset($_POST['btn_start_stud'])){
         
         $_SESSION['mode'] = 'mode_stud';   
         //определяем количество слов в старом списке для изучения
         $query = "SELECT `studList` FROM `users` WHERE `id` = $_SESSION[user_id];";
         $result = queryRun($query, "Error in time reading from 'users'<br> $query <br>");    
         $strStudList = mysql_fetch_array($result);
-        if($strStudList['studList']){
+        if(strlen($strStudList['studList']) ){
             $questionNumber = sizeof(explode(',',$strStudList['studList']));
 
-            $questionNumberMsg = "Уже в списке для изучения на сегодня имеется слов : $questionNumber <br>"
-                    . "Добавте к ним некоторое количество новых вопросов<br>";
+           
         }
+        else{
+            $questionNumber =0;
+        }
+         $questionNumberMsg = "Уже в списке для изучения на сегодня имеется слов : $questionNumber <br>"
+                    . "Добавьте к ним некоторое количество новых вопросов<br>";
 
         
         
@@ -77,10 +85,9 @@ var_dump($dictionary);echo '<br>';*/
             //var_dump($dictionary);
                
             foreach ($dictionary->wordsList as $word) {
-                //частота слова в тексте
-                //var_dump($dictionary->wordFrequencyMap);
+                //частота слова в тексте                
                 $frequency=$dictionary->wordFrequencyMap[htmlentities($word->foreign)];
-               // var_dump($dictionary);
+               
                 //если пользователь не смотрел перевод слова, считается что он его знает
                 if($word->stud ==0 ||( $word->stud == 1 && time() -$word->lastData > $CRITERION_OF_REPETITION)){
                     
@@ -195,13 +202,33 @@ var_dump($dictionary);echo '<br>';*/
             //загружаем список для изучения
             if ($_POST['newQuestions']=='') $_POST['newQuestions']=0;
             if (preg_match('/\D/', $_POST['newQuestions'])) $_POST['newQuestions']=7;
-            $studList = new StudList($_POST['newQuestions']); 
+            
+            //определяем общее количество записей в личной таблице
+            $query = "SELECT COUNT(*) FROM u".$_SESSION['user_id'].";";            
+            $res = queryRun($query, "Error in time counting");
+            $row = mysql_fetch_row($res);
+            $records =$row[0];
+            
+            if($records < $_POST['newQuestions'] + $questionNumber){
+                $content .= "<h1>Недостаточно записей в вашем словаре. Сначала зайдите в режим чтения и проработайте текст</h1>";
+            }
+            else{
+                $studList = new StudList($_POST['newQuestions']); 
+                //$button = 'btn_start_stud';
+            }
+            
 
             //
         }
         else{
             if (!isset($_POST['btn_stud'])){
-            $studList =  unserialize($_SESSION['studList']);
+                if (isset($_SESSION['studList'])){
+                    $studList =  unserialize($_SESSION['studList']);
+                }
+                else{
+                    $studList = new StudList(0);
+                }
+            
             }
         }
         if(isset($_POST['btn_ready'])){//если нажата кнопка "Готово"
@@ -233,7 +260,7 @@ var_dump($dictionary);echo '<br>';*/
         //if(isset($studList)) $content .= var_dump($studList);
         }
         else{// если список для изучения пуст
-            if(!$strStudList['studList']){//но при этом в таблице users за пользователем закреплен непустой список
+            if(strlen($strStudList['studList'])==0){//но при этом в таблице users за пользователем закреплен непустой список
                 /*
                  * не понятно, как такая ситуация вообще может возникать?
                  * Если в таблице users за пользователем закреплен непустой список, то список должен быть не пустым.
@@ -252,16 +279,19 @@ var_dump($dictionary);echo '<br>';*/
 
 
         }
-        if ($_SESSION['mode']=='mode_stud'){
+        if ($_SESSION['mode']=='mode_stud' ){
             include_once 'forms/studing_form.php';//подключаем файл формы для изучения
             $content .= $stud_form -> toString();
         }
         else{
-            //выводим сообщение, что изучение закончено
-            $content .= '<h1>Learning is ended for today</h1>';
-            //уничтожаем переменную сессии содержащую список примеров, если он существует
-            if (isset($_SESSION['exampleList'])) unset($_SESSION['exampleList']);
-        }
+            
+                //выводим сообщение, что изучение закончено
+                $content .= '<h1>Learning is ended for today</h1>';
+                //уничтожаем переменную сессии содержащую список примеров, если он существует
+                if (isset($_SESSION['exampleList'])) unset($_SESSION['exampleList']);
+            }
+            
+        
         
  
     default:
@@ -279,15 +309,16 @@ var_dump($dictionary);echo '<br>';*/
  * процедура тестирования
  */
 function testing($studList, $button){
-    /*echo '(count($studList))'.count($studList->studList).'<br>';
+   /* echo '(count($studList))'.count($studList->studList).'<br>';
     var_dump($studList);
     echo '++++++++++';*/
     //если список для изучения не пустой
     if  (count($studList->studList)){
         if (isset($_POST['question_text_area'])){
-            $currentWord = $studList->studList[$_POST['question_text_area']];
+            $question_text_area = $_POST['question_text_area'];
+            $currentWord = $studList->studList[$question_text_area];
             /*echo '^^^^^^^^<br>';
-            var_dump($currentWord);echo '^^^^^^^^<br>';*/
+            var_dump($currentWord);echo' '^^^^^^^^<br>';*/
         }else{
             $currentWord = reset($studList->studList);
             /*echo '*********<br>';
@@ -508,8 +539,9 @@ function testing($studList, $button){
                 }*/
                 //$_POST['shown'] = serialize($shownExample);
                 //создаем
+                break;
                 
-
+                case 'btn_start_stud':
                 
                 break;
 
@@ -565,8 +597,8 @@ function getWordObjFromString($str,$dictionary){
         //не допускаем кириллических символов в поле для ввода иностранного слова        
         if (!preg_match('/[а-яА-ЯёЁ]+/u', $str)){//если кирилических символов нет
             //устанавливаем единственное известное свойство слова в массив свойств слова для создания объекта "слово"
-            $str = strtoupper(htmlentities($str));
-            $property_arr['foreign'] = qou($str);
+            
+            $property_arr['foreign'] = correct_foreign($str);
             //var_dump($property_arr);
             //echo $property_arr['foreign'];
             //создаем объект слово
@@ -591,11 +623,14 @@ function getWordObjFromString($str,$dictionary){
 function qou($str){
     $start = 0;
     $array_chang = array();
-    while(preg_match('/(&\w{5};)/', $str, $matches,PREG_OFFSET_CAPTURE,$start)){
+    while(preg_match('/(&\w{3,5};)/', $str, $matches,PREG_OFFSET_CAPTURE,$start)){
+        //var_dump($matches);
         $pos_apersand = $matches[1][1];
+        $lenentitie = strlen($matches[1][0]);
+                
         //echo 'pos_apersand ='.$pos_apersand.'<br>';
-        $array_chang[$pos_apersand]= strtolower(substr($str, $pos_apersand,7)) ;
-        $start =$pos_apersand+7;
+        $array_chang[$pos_apersand]= strtolower(substr($str, $pos_apersand,$lenentitie)) ;
+        $start =$pos_apersand+6;
         //str2=substr($str, $pos_apersand+7);
         
         
@@ -608,6 +643,24 @@ function qou($str){
         $str=substr_replace($str, $substr, $pos_apersand, strlen($substr));
         
     }
+    return $str;
+}
+
+/*
+ * преобразует строку к верхнему регистру
+ * и заменяет кавычки и теги их строковыми эквивалентами
+ */
+function quo($str) {
+    return strtoupper(htmlentities($str));
+}
+/*
+ * из содержимого тестового поля создает строку пригодную для использования в качестве
+ * свойсива foreign слова (переводит в верхний регистр, небуквенные символы ппеобразует
+ * в сироку символов, 
+ */
+function correct_foreign($str) {
+    $str = quo($str);
+    $str = qou($str);
     return $str;
 }
 ?>
