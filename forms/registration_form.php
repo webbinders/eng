@@ -3,12 +3,13 @@
     include_once __DIR__ . '/../classes/class_form.php';
     
     $my_form=new HtmlForm(array(
-        'class'=>'registration',
+        'class'=>'autorisation',
         'action'=>'./registration.php',
         'method'=>'POST'
     ));
     
-                $title = new pElement(array(
+            $title = new pElement(array(
+                'class' => 'formtitle',
                 'text' => "Форма регистрации",
             ));
             $my_form->addInputForm($title);
@@ -52,6 +53,9 @@
         'name'=>'btnCansel',
         'value'=>'Сброс'
     ));   
+    $my_form->addInputForm($btnReset);
+    
+
     
 
 
