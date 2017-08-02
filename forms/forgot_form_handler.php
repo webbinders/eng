@@ -82,3 +82,4 @@ else{
 
 }
 }
+if(isset($_POST['btnCansel'])) unset ($_POST);//если нажата кнопка "Сбросить"

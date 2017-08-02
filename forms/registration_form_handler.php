@@ -61,7 +61,7 @@ if(isset($_POST['btnOK'])){
     //Подключаемся к серверу
      include "server_connect.php";
      
-    //устанавливаем кодировку utf-8
+    /*/устанавливаем кодировку utf-8
      mysql_query("SET NAMES utf8"); 
      
     //выбираем базу данных
@@ -70,7 +70,7 @@ if(isset($_POST['btnOK'])){
     //если не удалось выбрать базу 
      if (!mysql_select_db($db_name)) {
           die ('Не удалось выбрать базу  '.$db_name.'<br>' . mysql_error());
-     }
+     }*/
      
     //Ищем пользователя в БД
     
@@ -122,6 +122,8 @@ TAB;
              print 'отображаем личный кабинет';
              //устанавливаем переменные сессии
              $_SESSION['access'] = 1;
+             include 'handler_functions.php';
+             $_SESSION['login'] = getLogin($email);
              
              //переходим в личный кабинет
              header("Location: http://".$_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF']).'/office.php');
@@ -136,7 +138,7 @@ TAB;
 
  }
 }
- 
+ if(isset($_POST['btnCansel'])) unset ($_POST);//если нажата кнопка "Сбросить"
 
        
 ?>
