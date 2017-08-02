@@ -109,8 +109,7 @@ if(isset($_POST['btnOK'])){
             `answers` int(11) DEFAULT '0' COMMENT 'количество правильных ответов',
             `shows` int(11) DEFAULT '1' COMMENT 'количество показов всего',
             `level` float DEFAULT '0' COMMENT 'answers/show',
-            `studDate` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'дата последнего показа',
-            `examples` char(255) DEFAULT NULL COMMENT 'список id примеров использования слова в таблицы thesaurus',
+            `studDate` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'дата последнего показа',            
             `stud` tinyint(1) DEFAULT '0' ,
             PRIMARY KEY (`id`)
           ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
