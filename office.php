@@ -315,7 +315,16 @@ function testing($studList, $button){
     //если список для изучения не пустой
     if  (count($studList->studList)){
         if (isset($_POST['question_text_area'])){
-            $question_text_area = $_POST['question_text_area'];
+            if(correct_foreign($_POST['question_text_area']) != $_POST['question_text_area']){
+                //если в БД необработанная строка, то свойство foreing не будет соответствовать correct_foreign($_POST['question_text_area'])
+                //то берем свойство из текстового поля
+                $question_text_area = correct_foreign($_POST['question_text_area']);
+            }  else {
+                
+                $question_text_area = $_POST['question_text_area'];
+            }
+            
+            
             $currentWord = $studList->studList[$question_text_area];
             /*echo '^^^^^^^^<br>';
             var_dump($currentWord);echo' '^^^^^^^^<br>';*/
@@ -377,8 +386,8 @@ function testing($studList, $button){
                     
                 }
                 //копируем значения текстовых областей в свойства
-                $currentWord->foreign = $_POST['question_text_area'];  
-                $currentWord->native = $_POST['answer_text_area']; 
+                $currentWord->foreign = correct_foreign($_POST['question_text_area']);  
+                $currentWord->native = htmlentities($_POST['answer_text_area']); 
                 //увеличиваем на 1 свойство answers
                 $currentWord->answers++;
                 
@@ -392,7 +401,6 @@ function testing($studList, $button){
                         . "`shows`=$currentWord->shows,"
                         . "`level`=$currentWord->answers/$currentWord->shows,"
                         . "`studDate` = NOW(),"
-                        . "`examples`='$currentWord->examples',"
                         . "`stud`=$currentWord->stud "
                         . "WHERE `id`=$currentWord->id;";
                 
@@ -428,8 +436,8 @@ function testing($studList, $button){
                 $currentWord->shows++;
                 
                 //копируем значения текстовых областей в свойства
-                $currentWord->foreign = $_POST['question_text_area'];  
-                $currentWord->native = $_POST['answer_text_area']; 
+                $currentWord->foreign = correct_foreign($_POST['question_text_area']);  
+                $currentWord->native = htmlentities($_POST['answer_text_area']); 
                 
                 //Обновляем запись для слова в БД
                 //Личная таблица
@@ -440,7 +448,6 @@ function testing($studList, $button){
                         . "`shows`=$currentWord->shows,"
                         . "`level`=$currentWord->answers/$currentWord->shows,"
                         . "`studDate` = NOW(),"
-                        . "`examples`='$currentWord->examples',"
                         . "`stud`=$currentWord->stud "
                         . "WHERE `id`=$currentWord->id;";
                 
@@ -482,8 +489,8 @@ function testing($studList, $button){
             case 'btn_view_example'://Если нажата "Показать примеры"
             //-----------------------------------
                 //копируем значения текстовых областей в свойства
-                $currentWord->foreign = $_POST['question_text_area'];  
-                $currentWord->native = $_POST['answer_text_area']; 
+                //$currentWord->foreign = $_POST['question_text_area'];  
+                //$currentWord->native = $_POST['answer_text_area']; 
                 
                 //Саздать запрос на поиск примеров содержащих текущее слово
                /* $foreign = trim(strtoupper(addslashes($_POST['question_text_area'])));
@@ -598,7 +605,7 @@ function getWordObjFromString($str,$dictionary){
         if (!preg_match('/[а-яА-ЯёЁ]+/u', $str)){//если кирилических символов нет
             //устанавливаем единственное известное свойство слова в массив свойств слова для создания объекта "слово"
             
-            $property_arr['foreign'] = $str;
+            $property_arr['foreign'] = correct_foreign($str);
             //var_dump($property_arr);
             //echo $property_arr['foreign'];
             //создаем объект слово
@@ -623,7 +630,7 @@ function getWordObjFromString($str,$dictionary){
 function qou($str){
     $start = 0;
     $array_chang = array();
-    while(preg_match('/(&\w{3,5};)/', $str, $matches,PREG_OFFSET_CAPTURE,$start)){
+    while(preg_match('/(&\w{2,5};)/', $str, $matches,PREG_OFFSET_CAPTURE,$start)){
         //var_dump($matches);
         $pos_apersand = $matches[1][1];
         $lenentitie = strlen($matches[1][0]);
@@ -655,9 +662,8 @@ function quo($str) {
 }
 /*
  * из содержимого тестового поля создает строку пригодную для использования в качестве
- * свойсива foreign слова (переводит в верхний регистр, небуквенные символы преобразует
- * в строку символов.
- * Необходимость этой функции вызвана тем, что некоторые кавычки "ломаются" после преобразования строки в верхний регистр.
+ * свойсива foreign слова (переводит в верхний регистр, небуквенные символы ппеобразует
+ * в сироку символов, 
  */
 function correct_foreign($str) {
     $str = quo($str);
