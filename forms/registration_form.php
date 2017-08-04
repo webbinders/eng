@@ -23,6 +23,11 @@
         'value'=>isset($_POST['email'])?$_POST['email']:''
     ));
     $my_form->addInputForm($email_box);
+    
+     $msg_email = new pElement(array(
+        'text' => isset($_POST['msg']['email']) ? $_POST['msg']['email'] : '',
+    ));
+    $my_form->addInputForm($msg_email);
 
     //создаем  поле для ввода пароля и добавляем его на форму
     $psw_box=new TextPswElement(array(
@@ -32,6 +37,11 @@
         'required'=>0
     ));
     $my_form->addInputForm($psw_box);
+    
+    $msg_psw = new pElement(array(
+        'text' => isset($_POST['msg']['psw']) ? $_POST['msg']['psw'] : '',
+    ));
+    $my_form->addInputForm($msg_psw);
     
     //сообщение об ошибке отображаемое на форме
     if (isset($messing)) $msg=$messing;
