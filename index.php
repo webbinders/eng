@@ -3,6 +3,7 @@
         session_start();
         $_SESSION['lang'] = 'ru';
         include './classes/pageClass.php'; //подключаем файл класса страницы
+        include 'socbuttons.php';//подключаем файл скодами социальніх кнопок
         
         //если пользователь авторизирвался
         if (isset($_SESSION['access']) && $_SESSION['access']){
@@ -15,20 +16,14 @@
              */
         }
         $content = about();
+        $content = facebookButton($content);
         $pageObj = new pageClass($content);
         echo $pageObj->build_Page();
         
         function about(){
             $text = 
 <<<ABOUT
-                    <div id="fb-root"></div>
-                        <script>(function(d, s, id) {
-                          var js, fjs = d.getElementsByTagName(s)[0];
-                          if (d.getElementById(id)) return;
-                          js = d.createElement(s); js.id = id;
-                          js.src = "//connect.facebook.net/ru_RU/sdk.js#xfbml=1&version=v2.10";
-                          fjs.parentNode.insertBefore(js, fjs);
-                        }(document, 'script', 'facebook-jssdk'));</script>
+
                     <div class = 'about'>
                     <h1 >О сайте</h1>
                     
@@ -47,10 +42,11 @@
                         Даже если вы по каким-то причинам не читаете временно на английском, рекомендуется все-равно регулярно проходить режим изучения, чтобы слова не забывались.</p>
                             <p> Рекомендумая величина списка для изучения 20-30 слов.</p>
                     </div>
-                    <div class="fb-like" data-href="http://www.eng.zzz.com.ua" data-layout="standard" data-action="like" data-size="small" data-show-faces="true" data-share="true"></div>
+                    
 ABOUT;
             return $text;
         }
+
         
         ?>
   
