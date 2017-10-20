@@ -299,6 +299,7 @@ class ButtonElement extends HtmlFormElement{
     if ( ($_type=='button')||($_type=='reset')||($_type=='submit')){
         $this->htmlString=
                 "<BUTTON  " .
+                "ID='$this->id' ".
                 "formaction='$this->formaction' ".
                 "CLASS='$this->class' ".
                 "NAME='$this->name'>". 

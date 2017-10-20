@@ -28,7 +28,7 @@ class pageClass {
      * Конструктор
      */
     function  __construct($_content = ''){
-        $hat = 'Шапка сайта';
+        $hat = '';//'Шапка сайта';
         $_roof  = 
 <<<BEGINPAGE
             <!DOCTYPE html>
@@ -54,18 +54,19 @@ BEGINPAGE;
             //отображаем интерфейс авторизации
             $log_in = 
 <<<LOGIN
-            <div>Интерфейс входа / регистрации </div>
-            <a href='joining.php'>Вход</a><br>
-            <a href='registration.php'>Регистрация</a><br>
-            <a href='forgot.php'>Забыли пароль</a><br>
+            <div class = 'authorization'>
+                <a href='joining.php'>Вход</a><br>
+                <a href='registration.php'>Регистрация</a><br>
+                <a href='forgot.php'>Забыли пароль</a><br>
+            </div>
 LOGIN;
             $_roof .= $log_in;
         }
         
         $this->roof = $_roof;
         $this-> content = $_content;
-        $this-> footer = '<div class="footer">Подвал сайта</div></body>
-</html>';
+        $footer_content = '';//содержимое подвала сайта
+        $this-> footer = '<div class="footer">'.$footer_content.'</div></body></html>';//контейнер для подвала и завершающие теги для страницы
     }
     
  

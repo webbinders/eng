@@ -2,7 +2,7 @@
 include_once __DIR__ . '/../classes/class_form.php';
 //создаем объект формы
 $my_form=new HtmlForm(array(
-    'class'=>'forgot',
+    'class'=>'autorisation',
     'action'=>'forgotOK.php',
 ));
 

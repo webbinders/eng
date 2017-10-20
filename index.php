@@ -3,7 +3,7 @@
         session_start();
         $_SESSION['lang'] = 'ru';
         include './classes/pageClass.php'; //подключаем файл класса страницы
-        include 'socbuttons.php';//подключаем файл скодами социальніх кнопок
+        include 'socbuttons.php';//подключаем файл скодами социальных кнопок
         
         //если пользователь авторизирвался
         if (isset($_SESSION['access']) && $_SESSION['access']){

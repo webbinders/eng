@@ -5,6 +5,7 @@
     include './classes/pageClass.php'; //подключаем файл класса страницы
     include_once 'server_connect.php'; //соединяемся с сервером БД
     include './classes/WordList.php';
+    include 'socbuttons.php';//подключаем файл скодами социальніх кнопок
     
     
     $CRITERION_OF_REPETITION = 10*60*60;//10 часов
@@ -287,6 +288,7 @@ var_dump($dictionary);echo '<br>';*/
             
                 //выводим сообщение, что изучение закончено
                 $content .= '<h1>Learning is ended for today</h1>';
+                $content = facebookButton($content);//добавляем социальные кнопки
                 //уничтожаем переменную сессии содержащую список примеров, если он существует
                 if (isset($_SESSION['exampleList'])) unset($_SESSION['exampleList']);
             }
@@ -299,7 +301,7 @@ var_dump($dictionary);echo '<br>';*/
         break;
 }
         
-    
+        
         $pageObj = new pageClass($content);
         //если пользователь входит впервые, предложить войти или зарегистрироваться
         //если пользователь вошел дать ему знать

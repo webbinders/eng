@@ -4,12 +4,13 @@ include_once __DIR__ . '/../classes/class_form.php';
   //переменная содержащая адрес текущей страницы
             $_SESSION['urlForButton']="http://".$_SERVER['HTTP_HOST'].$_SERVER ['PHP_SELF']."?".SID;
             $my_form=new HtmlForm(array(
-                'class'=>'vhod',
+                'class'=>'autorisation',
                 'action'=>'./joining.php',
                 'method'=>'POST',
             ));
             
             $title = new pElement(array(
+                'class' => 'formtitle',
                 'text' => "Форма входа",
             ));
             $my_form->addInputForm($title);

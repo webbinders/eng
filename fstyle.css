@@ -2,13 +2,83 @@
     Created on : Nov 30, 2016, 12:00:04 AM
     Author     : Ser
 */
-.active_mode{
-    font-size: 20px;
-    background-color: red;
+
+body{
+    background-color: rgb(255,254,232);
+    padding: 10px;
+}
+.menu button{
+    float: left;
+    background: -moz-linear-gradient(bottom, goldenrod, whitesmoke);
+   
+    
+}
+
+.menu button.active_mode{
+    
+    //background-color: yellow;    
+    text-decoration: underline;
+    padding: 5px;
+   
     
 }
 .hidden, p .hidden{
     display: none;
 }
 
+.reading{
+   clear: left;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    overflow: auto;
+}
 
+textarea{
+    top: 0px;
+    display:block;
+    border-radius:5px;
+ 
+}
+
+.clear { 
+    clear: both;
+     visibility: hidden;     
+}
+
+#btnAdd, .btn_view_example{
+    border-radius:10px;
+    margin: 1px; 
+}
+
+
+label{
+    display: block;    
+}
+p.foreign{
+    
+    max-width:500px;
+    
+    padding: 5px;
+}
+.autorisation{
+    border: 2px solid green;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 20px;
+    width: 230px;
+}
+.formtitle{
+    font-size: 20px;
+    text-decoration:underline;
+}
+.new{
+    text-shadow:5px 2px 4px grey;
+}
+.authorization{
+    
+}
+.about{
+    background-color:#00ffcc;
+    padding: 20px;
+        
+}

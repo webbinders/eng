@@ -1,14 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="2">
+        <file>
+            <url>classes/WordList.php</url>
+            <bookmark id="1">
+                <name/>
+                <line>0</line>
+                <key/>
+            </bookmark>
+        </file>
+        <file>
+            <url>office.php</url>
+            <bookmark id="2">
+                <name/>
+                <line>0</line>
+                <key/>
+            </bookmark>
+        </file>
+    </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/xampp183n/htdocs/EnglishReading/forms/registration_form.php</file>
+            <file>file:/D:/xampp183n/htdocs/EnglishReading/forms/functions.php</file>
             <file>file:/D:/xampp183n/htdocs/EnglishReading/office.php</file>
-            <file>file:/D:/xampp183n/htdocs/EnglishReading/server_connect.php</file>
-            <file>file:/D:/xampp183n/htdocs/EnglishReading/classes/pageClass.php</file>
-            <file>file:/D:/xampp183n/htdocs/EnglishReading/registration.php</file>
-            <file>file:/D:/xampp183n/htdocs/EnglishReading/classes/class_form.php</file>
+            <file>file:/D:/xampp183n/htdocs/EnglishReading/forms/studing_form.php</file>
+            <file>file:/D:/xampp183n/htdocs/EnglishReading/forgot.php</file>
         </group>
     </open-files>
 </project-private>

@@ -2,7 +2,7 @@
 
 //создаем объект формы
 $my_form=new HtmlForm(array(
-    'class'=>'forgot',
+    'class'=>'autorisation',
     'action'=>'forgotOK.php',
 ));
 

@@ -4,7 +4,7 @@
 include_once __DIR__ . '/../classes/class_form.php';
 
 $menu_form=new HtmlForm(array(
-   'class'=>'reading',
+   'class'=>'menu',
    'action'=>'./handling_text.php',
    'method'=>'POST'
 ));
@@ -28,3 +28,10 @@ $btn_stud = new ButtonElement(array(
     'class' => ($_SESSION['mode'] == 'mode_stud') ? 'active_mode' : 'mode',//в зависимости от выбранного режима подсвечиваем кнопку
 ));
 $menu_form ->addInputForm($btn_stud);
+
+//пустой абзац отменяющий обтекание
+$p_clear = new pElement(array(
+    'class' => 'clear',
+    'text' =>'-',
+));
+$menu_form ->addInputForm($p_clear);
