@@ -1,0 +1,123 @@
+body{
+	margin: 0;
+	padding: 0;
+	background-color: #fef8ee;
+}
+.center-block{
+	max-width: 900px;
+	margin: 0 auto;
+}
+header{
+	font-size: 1.4em;
+	background-color: #90dba8;
+	overflow: hidden;
+	position: relative;	
+}
+.logo{
+	display: inline-block;
+	visibility: visible;
+}
+.logo p{
+	display: inline-block;
+	
+	margin: 15px 0;
+	color: #313473;
+}
+.logo img{
+	vertical-align: middle;
+	
+}
+.menu{		
+	float: right;
+	padding: 10px; 	
+}
+nav{
+
+	display: inline-block;
+}
+.autoriz{
+	float: right;
+	margin-left: 30px;
+	
+	/*background-color: #8fc094;*/
+	display: inline-block;
+}
+button{
+	font-size: 0.7em;
+	/*font-weight: bold;*/
+	padding: 5px;
+	border: 2px solid white;
+	color: white;
+	font-family: cursive;
+}
+.autoriz button{
+	background-color: #6eaa77;
+
+}
+nav button{
+	background: linear-gradient(to top, #3c8d89, #5bc9c5);
+	/*background-color: #22b8b3;*/
+	
+
+}
+section{
+	margin-top: 30px;
+	background-color: #e2f3c4;
+	padding: 10px 30px;
+	font-size: 1.2em;
+	color: #4f305c;
+	border-radius: 10px;
+}
+h1{
+	color: #7a326a;
+}
+h2{
+	font-size: 1.3em;
+	color: #7a326a;
+}
+
+footer{
+	margin-top: 20px;
+	min-height: 50px;
+	background-color: #c0e6d1;
+	padding: 20px 0;
+}
+footer button{
+	background-color: #6077af;
+}
+
+@media screen and (max-width: 890px){
+	.logo{	
+		margin: 10px 0;
+	}
+	.logo p{		
+	display: none;
+	}
+	
+}
+@media screen and (max-width: 670px){
+	.logo{
+		
+		position: absolute;
+		top: 0;
+		left: 0;
+
+	}	
+	nav{
+		float: right;
+		margin-left: 30px;
+		margin-top: 5px; 
+	}
+}
+@media screen and (max-width: 450px){
+	nav{
+
+		margin-left: 0px;
+	}
+	button{
+		font-size: 0.65em;
+	}
+	section{
+		padding: 5px 10px;
+	}
+}
