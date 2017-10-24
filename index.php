@@ -3,7 +3,7 @@
         session_start();
         $_SESSION['lang'] = 'ru';
         include './classes/pageClass.php'; //подключаем файл класса страницы
-        include 'socbuttons.php';//подключаем файл скодами социальных кнопок
+        //include 'socbuttons.php';//подключаем файл скодами социальных кнопок
         
         //если пользователь авторизирвался
         if (isset($_SESSION['access']) && $_SESSION['access']){
@@ -16,8 +16,9 @@
              */
         }
         $content = about();
-        $content = facebookButton($content);
-        $pageObj = new pageClass($content);
+        $socButtonsArr = array('facebook');//массив добавляемых соцсетей
+        //$content = facebookButton($content,$socButtonsArr);
+        $pageObj = new pageClass($content, $socButtonsArr);
         echo $pageObj->build_Page();
         
         function about(){

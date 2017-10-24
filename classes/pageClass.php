@@ -1,10 +1,4 @@
 <?php
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * Description of pageClass
  * Этот класс описывает страницу.
@@ -27,57 +21,126 @@ class pageClass {
     /*
      * Конструктор
      */
-    function  __construct($_content = ''){
-        $hat = '';//'Шапка сайта';
-        $_roof  = 
-<<<BEGINPAGE
-            <!DOCTYPE html>
-            <html>
-                <head>
-                    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-                    <link rel="stylesheet" type="text/css" href="./normalize.css">
-                     <link rel="stylesheet" type="text/css" href="./fstyle.css">
-                    <title></title>
-                </head>
-                <body><div class="roof">$hat </div>
-BEGINPAGE;
-        //если пользователь вошел
+    function  __construct($_content = '', $socNets = array()){
+        $hello ='';
+        //если пользователь вошел 
         if(isset($_SESSION['access']) && ($_SESSION['access'] == 1)){
-             $_roof .= "<a href='exit.php'>Выход</a><br>";
-            //то приветствуем его 
-            $_roof .= "<div>Hello ". $_SESSION['login'] ."</div>";
-            //и подключаем его БД
-            
-           
+            $auto_button ="<button formaction='exit.php'>Выход</button>";
+            $hello = "<div>Hello ". $_SESSION['login'] ."</div>";            
         }
-        else{//если пользователь еще не авторизирвался
-            //отображаем интерфейс авторизации
-            $log_in = 
-<<<LOGIN
-            <div class = 'authorization'>
-                <a href='joining.php'>Вход</a><br>
-                <a href='registration.php'>Регистрация</a><br>
-                <a href='forgot.php'>Забыли пароль</a><br>
-            </div>
-LOGIN;
-            $_roof .= $log_in;
+        else{
+            $auto_button =<<<BUTTON
+                        <button formaction='joining.php'>Вход</button>
+                        <button formaction='registration.php'>Регистрация</button>
+BUTTON;
         }
+        //формируем гоизонтальное меню
+        $nav = <<<NAV
+        <nav>
+            <form>
+                <button formaction = >О сайте</button>
+                <button formaction = >Режим чтения</button>
+                <button formaction = >Режим изучения</button>
+            </form>
+
+        </nav>
+NAV;
+        //формируем верхнюю часть страницы соответствующую свойству  $roof
+        $_roof = <<<ROOF
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Read in english</title>
+	
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<header>
+<div class="center-block">
+   <div class="logo">
+       <img src="logo.svg" width="50">
+       <p><i>Читайте с легкостью.</i></p>
+   </div>
+   <div class="menu">  
+       <div class="autoriz">
+          $hello
+                <form>$auto_button</form>
+
+       </div>
+              $nav
+       
+       </div>
+   </div>
+</header>
+ROOF;
+
+        
+
         
         $this->roof = $_roof;
-        $this-> content = $_content;
+        $this-> content =<<<CONTENT
+            <div class="center-block">
+               <section>
+                   $_content  
+               </section>
+
+            </div> 
+CONTENT;
+        
         $footer_content = '';//содержимое подвала сайта
-        $this-> footer = '<div class="footer">'.$footer_content.'</div></body></html>';//контейнер для подвала и завершающие теги для страницы
+        $socButtonFoot = $socButtonPart1 = $socButtonPart2 = '';
+        foreach ($socNets as $value) {
+            switch ($value){
+            case 'facebook':
+                //добавляем первую часть кода в начало контента
+                $socButtonPart1  =
+<<<PART1
+    <div id="fb"></div>
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/ru_RU/sdk.js#xfbml=1&version=v2.10";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+            
+PART1;
+                   // $this->content = $socButtonPart1.$this->content;
+                    
+                    //формируем вторую часть кода, для добавления в подвал
+                        $socButtonPart2 =
+<<<PART2
+    <div class="fb-like" 
+        data-href="http://www.eng.zzz.com.ua" 
+        data-layout="standard" 
+        data-action="like" 
+        data-size="small" 
+        data-show-faces="true" 
+        data-share="true">
+    </div>            
+PART2;
+                        break;
+                    
+            }
+        }
+        //устанавливаем значение подвала
+        $footer_content = <<<FOOTER
+        <footer>
+            <div class="center-block">
+                $socButtonPart1
+               $socButtonPart2 
+            </div>     
+        </footer>
+    </body>
+</html>
+FOOTER;
+
+        $this-> footer = $footer_content;
     }
     
  
-    /*
-     * Функция формирующая контент (среднюю часть)страницы
-     */
-     private function build_Content($content_){
-         include_once 'class_form.php';
-         $this -> content = $content_;
-         
-    }
+
     
  
      function build_Page(){
