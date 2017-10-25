@@ -110,7 +110,7 @@ if (isset($_POST['btn_start_stud']) ||
         if (isset($_SESSION['exampleList'])) {
             //получаем из переменной список примеров
         include 'functions.php';
-        dysplay_exampleS($stud_form); 
+        dysplay_examples($stud_form); 
         }
         else{
             $p_msg = new pElement(array(

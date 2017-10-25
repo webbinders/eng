@@ -38,9 +38,9 @@ BUTTON;
         $nav = <<<NAV
         <nav>
             <form>
-                <button formaction = >О сайте</button>
-                <button formaction = >Режим чтения</button>
-                <button formaction = >Режим изучения</button>
+                <button formaction = './about.php'>О сайте</button>
+                <button formaction = './office.php'>Режим чтения</button>
+                <button formaction = './office.php'>Режим изучения</button>
             </form>
 
         </nav>

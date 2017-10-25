@@ -9,6 +9,14 @@ $menu_form=new HtmlForm(array(
    'method'=>'POST'
 ));
 
+$btn_about = new ButtonElement(array(
+    'id'=>'btn_about',
+    'formaction' => './about.php',
+    'value' => 'О сайте',
+    'name' => 'btn_about',
+    'type' => 'button',
+    'class' => (basename($_SERVER ['PHP_SELF'])  == 'about.php') ? 'active_mode' : 'mode',//в зависимости от выбранного режима подсвечиваем кнопку
+));
 $btn_read = new ButtonElement(array(
     'id'=>'btn_read',
     'formaction' => './office.php',
