@@ -91,6 +91,12 @@ abstract class HtmlFormElement{
 	 return $parametr;
   		 	 	
 }
+/*
+ * Устанавливает значение атрибута элемента формы
+ */
+function setAttr($key, $value){
+    $this->$key=$value;
+}
     
     
 }
@@ -327,6 +333,24 @@ class pElement extends HtmlFormElement{
     }
     $this->htmlString=  
                  "<p $class $name> $this->text</p>";
+    }
+}
+
+class divElement extends HtmlFormElement{
+    var $text;
+    function __construct($arr_param){
+    parent::__construct($arr_param);
+    if (isset($this->class)) 
+        $class="class='$this->class' " ;
+            else 
+                $class='';
+    if (isset($this->id)){
+        $id = "id='$this->id'";
+    }else{
+        $id ='';
+    }
+    $this->htmlString=  
+                 "<div $id $class> $this->text</div>";
     }
 }
 
