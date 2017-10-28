@@ -25,13 +25,14 @@ class pageClass {
         $hello ='';
         //если пользователь вошел 
         if(isset($_SESSION['access']) && ($_SESSION['access'] == 1)){
-            $auto_button ="<button formaction='exit.php'>Выход</button>";
-            $hello = "<div>Hello ". $_SESSION['login'] ."</div>";            
+            $auto_button ="<button class='btn-autoriz' formaction='exit.php'>Выход</button>";
+            $hello = "<div id='hello'>Hello <br>". $_SESSION['login'] ."</div>";            
         }
         else{
             $auto_button =<<<BUTTON
-                        <button formaction='joining.php'>Вход</button>
-                        <button formaction='registration.php'>Регистрация</button>
+                        <button class="btn-autoriz" formaction='registration.php'>Регистрация</button>
+                        <button class="btn-autoriz" formaction='joining.php'>Вход</button>
+                        
 BUTTON;
         }
         //формируем гоизонтальное меню

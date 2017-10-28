@@ -53,6 +53,7 @@
     
     $btnOK=new ButtonElement(array(
         'type'=>'submit',
+        'class'=>'btn-autoriz',
         'name'=>'btnOK',
         'value'=>'Зарегистрироваться'
     ));
@@ -60,6 +61,7 @@
     
     $btnReset=new ButtonElement(array(
         'type'=>'reset',
+        'class'=>'btn-autoriz',
         'name'=>'btnCansel',
         'value'=>'Сброс'
     ));   

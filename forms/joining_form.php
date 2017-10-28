@@ -45,6 +45,7 @@ include_once __DIR__ . '/../classes/class_form.php';
 
             $btnOK=new ButtonElement(array(
                 'type'=>'submit',
+                'class'=>'btn-autoriz',
                 'name'=>'btnOK',
                 'value'=>'Войти'
             ));
@@ -52,6 +53,7 @@ include_once __DIR__ . '/../classes/class_form.php';
 
             $btnReset=new ButtonElement(array(
                 'type'=>'reset',
+                'class'=>'btn-autoriz',
                 'name'=>'btnCansel',
                 'value'=>'Сброс'
             ));
