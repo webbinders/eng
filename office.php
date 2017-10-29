@@ -51,8 +51,8 @@
     }
         
     
-    include_once 'forms/menu_form.php';//подключаем файл формы меню
-    $content .= $menu_form -> toString();
+    /*include_once 'forms/menu_form.php';//подключаем файл формы меню
+    $content .= $menu_form -> toString();*/
     
         
         
@@ -300,7 +300,6 @@ var_dump($dictionary);echo '<br>';*/
         
         break;
 }
-        
         
         $pageObj = new pageClass($content);
         //если пользователь входит впервые, предложить войти или зарегистрироваться

@@ -40,6 +40,7 @@ if (isset($_POST['btn_start_stud']) ||
         'value' => 'Готово',
         'name' => 'btn_ready',
         'type' => 'button',
+        
     ));
     $stud_form->addInputForm($btn_ready);
 
@@ -109,7 +110,7 @@ if (isset($_POST['btn_start_stud']) ||
     if (isset($_POST['btn_view_example'])) {
         if (isset($_SESSION['exampleList'])) {
             //получаем из переменной список примеров
-        include 'functions.php';
+        include  __DIR__ . '/../forms/functions.php';
         dysplay_examples($stud_form); 
         }
         else{
@@ -124,7 +125,7 @@ if (isset($_POST['btn_start_stud']) ||
     //Если была нажата "Показать перевод примера"
     if (isset($_POST['btn_show_native'])) {
     //получаем из переменной список примеров
-        include 'functions.php';
+        include  __DIR__ . '/../forms/functions.php';
         dysplay_example($stud_form);    
     }
 } else {
