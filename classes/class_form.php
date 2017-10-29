@@ -60,7 +60,7 @@ function delInputForm($input_form) {
         $return_string   .=  "\n";
       }	     
      $return_string .= "</FORM>\n"; 
-     return($return_string) ;
+     return $return_string ;
     }
 }
 //***************************************************
@@ -73,15 +73,13 @@ abstract class HtmlFormElement{
     var $label;
     var $class;
     var $id;
+    var $str_attr;
     
     function __construct($arr_param) {
-        //проверяем соответствие параметра допустимому значению
-        
-        //если параметр допустим, создаем соответствующий ему элемент
-        //$this->type=$_type;
-        //$this->name=  $this->value=  $this->htmlString="";
+        $str_attr = '';
         foreach ($arr_param as $key => $value) {
             $this->$key=$value;
+            $this->str_attr .= "$key = '$value'";
         }
         
     }
@@ -340,17 +338,9 @@ class divElement extends HtmlFormElement{
     var $text;
     function __construct($arr_param){
     parent::__construct($arr_param);
-    if (isset($this->class)) 
-        $class="class='$this->class' " ;
-            else 
-                $class='';
-    if (isset($this->id)){
-        $id = "id='$this->id'";
-    }else{
-        $id ='';
-    }
-    $this->htmlString=  
-                 "<div $id $class> $this->text</div>";
+
+    $this->htmlString =  "<div $this->str_attr> $this->text</div>";
+                
     }
 }
 
