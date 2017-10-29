@@ -38,10 +38,24 @@ nav{
 .autoriz{
 	float: right;
 	margin-left: 30px;
-	
+	width: 200px;
 	/*background-color: #8fc094;*/
 	display: inline-block;
 }
+.autoriz div{
+	float: left;	
+	font-size: 0.7em;
+	font-weight: bolder;
+	color: #313473;
+	padding-left: 8px;
+	border-left: 2px solid #313473; 
+
+}
+.autoriz button{
+	float: right;
+	margin-left: 10px;
+}
+
 button{
 	font-size: 0.7em;
 	/*font-weight: bold;*/
@@ -50,15 +64,20 @@ button{
 	color: white;
 	font-family: cursive;
 }
-.autoriz button{
+.btn-autoriz{
 	background-color: #6eaa77;
-
+	margin-bottom: 10px;
+	}
+.btn-autoriz:hover{
+	background-color: #7cc669;
+	
 }
 nav button{
 	background: linear-gradient(to top, #3c8d89, #5bc9c5);
 	/*background-color: #22b8b3;*/
-	
-
+}
+nav button:hover{
+	background: linear-gradient(to top,  #3c8d89, #6ae6ce);
 }
 section{
 	margin-top: 30px;
@@ -75,7 +94,18 @@ h2{
 	font-size: 1.3em;
 	color: #7a326a;
 }
+.autorisation{
+	max-width: 200px; 
+	font-size: 1.2em;
+	margin: 30px auto 100px auto;
 
+}
+.autorisation input{
+	width: 100%;
+	margin-bottom: 15px;
+	box-sizing: border-box;
+	padding: 5px;
+}
 footer{
 	margin-top: 20px;
 	min-height: 50px;
@@ -85,7 +115,14 @@ footer{
 footer button{
 	background-color: #6077af;
 }
-
+button.active_mode{
+    
+    //background-color: yellow;    
+    text-decoration: underline;
+    padding: 5px;
+   
+    
+}
 @media screen and (max-width: 890px){
 	.logo{	
 		margin: 10px 0;
@@ -104,7 +141,7 @@ footer button{
 
 	}	
 	nav{
-		float: right;
+		float: left;
 		margin-left: 30px;
 		margin-top: 5px; 
 	}
