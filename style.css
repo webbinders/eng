@@ -8,7 +8,7 @@ body{
 	margin: 0 auto;
 }
 header{
-	font-size: 1.4em;
+	font-size: 22px;
 	background-color: #90dba8;
 	overflow: hidden;
 	position: relative;	
@@ -27,27 +27,28 @@ header{
 	vertical-align: middle;
 	
 }
-.menu{		
+#panelNav{		
 	float: right;
-	padding: 10px; 	
+	padding: 10px 0;
+
 }
 nav{
-
 	display: inline-block;
 }
 .autoriz{
 	float: right;
-	margin-left: 30px;
-	width: 200px;
+	margin-left: 20px;
+	width: 240px;
 	/*background-color: #8fc094;*/
 	display: inline-block;
 }
 .autoriz div{
 	float: left;	
-	font-size: 0.7em;
+	font-size: 16px;
 	font-weight: bolder;
+
 	color: #313473;
-	padding-left: 8px;
+	padding: 10px 0 10px 8px;
 	border-left: 2px solid #313473; 
 
 }
@@ -57,19 +58,23 @@ nav{
 }
 
 button{
-	font-size: 0.7em;
+	font-size: 16px;
 	/*font-weight: bold;*/
 	padding: 5px;
 	border: 2px solid white;
 	color: white;
 	font-family: cursive;
-}
-.btn-autoriz{
 	background-color: #6eaa77;
 	margin-bottom: 10px;
+}
+button:hover{
+	background-color: #7cc669;
+}
+.btn-autoriz{
+	
 	}
 .btn-autoriz:hover{
-	background-color: #7cc669;
+	
 	
 }
 nav button{
@@ -106,9 +111,24 @@ h2{
 	box-sizing: border-box;
 	padding: 5px;
 }
+.reading{
+	width:100%;
+}
+#text_area{
+	padding: 10px;
+	font-size: 1.1rem;
+	margin-top: 20px; 
+	width: 97%;
+	min-height: 350px;
+	border: 2px solid #95ae76;
+	color: #360038;
+	background-color: #fef8ee;
+	margin-bottom: 10px;
+}
+
 footer{
 	margin-top: 20px;
-	min-height: 50px;
+	min-height: 70px;
 	background-color: #c0e6d1;
 	padding: 20px 0;
 }
@@ -117,7 +137,7 @@ footer button{
 }
 button.active_mode{
     
-    //background-color: yellow;    
+    /*background-color: yellow; */   
     text-decoration: underline;
     padding: 5px;
    
