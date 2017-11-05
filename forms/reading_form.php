@@ -162,9 +162,9 @@ if (isset($_POST['btn_find'])){
     //если была нажата "Показать примеры
     if (isset($_POST['btn_view_example'])) {
         $my_form->addInputForm($text_area);
-        include 'dysplay_translate.inc';
+        
         if (isset($_SESSION['exampleList'])) {//возможно эта проверка и не нужна, т.к. кнопка не должна быть показана, если примеров нет
-            include 'functions.php';
+            include  __DIR__ . '/../forms/functions.php';
             dysplay_examples($my_form);
             
         }
@@ -181,9 +181,9 @@ if (isset($_POST['btn_find'])){
     if (isset($_POST['btn_show_native'])) {
         
         $my_form->addInputForm($text_area);
-        include 'dysplay_translate.inc';        
+               
         //получаем из переменной список примеров
-        include 'functions.php';
+        include  __DIR__ . '/../forms/functions.php';
         dysplay_example($my_form);
        
         
