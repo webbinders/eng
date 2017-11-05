@@ -25,8 +25,8 @@ if (isset($_SESSION['access']) && $_SESSION['access']){
         'formaction' => './exit.php',
         'value' => 'Выход',
         'name' => '$btn_out',
-        'type' => 'button',
-        'class' => 'btn-autoriz'
+        'type' => 'button'
+        
 
     ));
     $auto_form->addInputForm($btn_out);
@@ -40,7 +40,7 @@ else{
         'value' => 'Вход',
         'name' => 'btn_in',
         'type' => 'button',
-        'class' => 'btn-autoriz'
+        
 
     ));
 
@@ -52,7 +52,7 @@ else{
         'value' => 'Регистрация',
         'name' => '$btn_registration',
         'type' => 'button',
-        'class' => 'btn-autoriz'
+        
 
     ));
     $auto_form ->addInputForm($btn_registration);

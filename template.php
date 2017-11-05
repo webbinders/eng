@@ -21,7 +21,7 @@ $header =<<<HEADER
 		<img src="logo.svg" width="50">
 		<p><i>Читайте с легкостью.</i></p>
 	</div>
-	<div class="menu">	
+	<div id="panelNav" class="menu">	
 		<div class="autoriz">
                     $auto_form_str
 

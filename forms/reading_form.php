@@ -14,7 +14,7 @@ $my_form=new HtmlForm(array(
 $btn_handling_text = new ButtonElement(array(
     'id'=>'btn_handling_text',
     'formaction' => './office.php',
-    'value' => 'обработать текст',
+    'value' => 'Обработать текст',
     'name' => 'btn_handling_text',
     'type' => 'button',
 ));
