@@ -50,6 +50,7 @@ $footer = <<<FOOTER
 			$socButtons
 		</div>		
 	</footer>
+	<script src="forms/eng.js"></script>
 FOOTER;
 /*
 </body>

@@ -85,12 +85,14 @@ nav button:hover{
 	background: linear-gradient(to top,  #3c8d89, #6ae6ce);
 }
 section{
+	position: relative;
 	margin-top: 30px;
 	background-color: #e2f3c4;
 	padding: 10px 30px;
 	font-size: 1.2em;
 	color: #4f305c;
 	border-radius: 10px;
+	min-height: 70vh;
 }
 h1{
 	color: #7a326a;
@@ -114,18 +116,57 @@ h2{
 .reading{
 	width:100%;
 }
-#text_area{
+
+textarea{
 	padding: 10px;
 	font-size: 1.1rem;
-	margin-top: 20px; 
-	width: 97%;
-	min-height: 350px;
 	border: 2px solid #95ae76;
 	color: #360038;
 	background-color: #fef8ee;
-	margin-bottom: 10px;
+	width: 97%;
+}
+textarea:nth-child(2){
+	height: 250px;
+}
+textarea:nth-child(4){
+	height: 1.3em;
+}
+textarea:nth-child(6){
+	height: 3.4em;
 }
 
+.reading label{
+	display: block;
+	font-family: cursive;	
+	font-size: 18px;
+	color: #224780;
+	border-top:2px solid #5d88a9;
+	margin-bottom: 5px;
+}
+.reading button{
+	border-top: 3px solid #eefddc;
+	border-left: 3px solid #eefddc;
+	border-bottom: 3px solid #5d88a9;	
+	background-color: #daf0bc; 
+	color: #224780;
+	margin: 5px 0;
+	padding: 3px 10px;
+}
+#btn_reset_text{
+	float: right;
+}
+#boxBtn{
+	position: absolute;
+	top: -31px;
+	right: 30px;
+
+}
+#boxBtn button{
+	vertical-align: bottom;
+	border: 2px solid #fef8ee;
+	padding: 1px 7px;
+	font-weight: bold;
+}
 footer{
 	margin-top: 20px;
 	min-height: 70px;
