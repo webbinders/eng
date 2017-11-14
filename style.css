@@ -70,6 +70,11 @@ button{
 button:hover{
 	background-color: #7cc669;
 }
+button:active{
+	background-color: #9fdd83;
+	color: #6eaa77;
+}
+
 .btn-autoriz{
 	
 	}
@@ -84,6 +89,11 @@ nav button{
 nav button:hover{
 	background: linear-gradient(to top,  #3c8d89, #6ae6ce);
 }
+nav button:active{
+	color:  #224780;
+	background: #53d8c1;
+}
+
 section{
 	position: relative;
 	margin-top: 30px;
@@ -132,28 +142,45 @@ textarea:nth-child(4){
 	height: 1.3em;
 }
 textarea:nth-child(6){
-	height: 3.4em;
+	height: 7.8em;
 }
 
 .reading label{
-	display: block;
+	
 	font-family: cursive;	
 	font-size: 18px;
-	color: #224780;
-	border-top:2px solid #5d88a9;
+	color: #224780;	
 	margin-bottom: 5px;
 }
 .reading button{
 	border-top: 3px solid #eefddc;
 	border-left: 3px solid #eefddc;
 	border-bottom: 3px solid #5d88a9;	
-	background-color: #daf0bc; 
-	color: #224780;
+	background-color: #FFCC72;
+	color: #80006F;
 	margin: 5px 0;
 	padding: 3px 10px;
 }
+
+.reading button:hover{
+	color: #FF6600;
+	background-color: #EAEE84; 
+}
+.reading button:active{
+	border-top: 3px solid #5d88a9;
+	border-left: 3px solid #5d88a9;
+	border-bottom: 3px solid  #eefddc;
+	background-color: #F59E1D;
+	color: #224780;
+
+}
 #btn_reset_text{
-	float: right;
+	position: absolute;
+	right: 32px;
+	top: 250px;
+	padding: 1px 5px;
+	border: 2px solid #95ae76;
+	background-color: rgba(255,204,114,0.5);
 }
 #boxBtn{
 	position: absolute;
@@ -217,5 +244,9 @@ button.active_mode{
 	}
 	section{
 		padding: 5px 10px;
+	}
+	#btn_reset_text{
+		right: 0;
+		
 	}
 }
