@@ -1,7 +1,7 @@
-//var parentElem = document.getElementById('readingForm');
-(function(){
-
+window.onload = function(){
+var engRead = JSON.parse(sessionStorage.getItem('engRead'));
 var parentElem = document.getElementsByClassName('reading');
+var textAreas = document.getElementsByTagName('TEXTAREA');
 if(parentElem[0]){
 	var box = document.createElement("Div");
 	box.setAttribute('id','boxBtn');
@@ -21,21 +21,40 @@ if(parentElem[0]){
 	btnBig.textContent = 'A';
 	btnBig.style.fontSize = '22px';
 	box.appendChild(btnBig);
-
+if(engRead){
+	setSizeInTextarea(engRead.currentSize);
+}
 box.addEventListener("click", changeFontSize, false);
+} else{
+	if(box){
+	box.removeEventListener("click", changeFontSize)
+	}
+}
+
 function changeFontSize(evt){
 	evt.preventDefault();
-	var textArea = document.getElementById('text_area');
+	
+	var currentSize;
 	if(evt.target == btnSmall){
-		textArea.style.fontSize = '14px';	
+		currentSize = '14px';	
 	}
 	if(evt.target == btnMedium){
-		textArea.style.fontSize = '18px';	
+		currentSize = '18px';	
 	}
 	if(evt.target == btnBig){
-		textArea.style.fontSize = '21px';	
+		currentSize = '21px';	
 	}
+	setSizeInTextarea(currentSize);
+	var setSize = {
+		currentSize: currentSize
+	}
+	sessionStorage.setItem('engRead', JSON.stringify(setSize));
+
 }
+function setSizeInTextarea(size){
+	for (var i = 0; i < textAreas.length; i++) {
+		textAreas[i].style.fontSize = size;
+		}
 }
 
-})();
+}
