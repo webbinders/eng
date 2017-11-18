@@ -1,6 +1,9 @@
 window.onload = function(){
 var engRead = JSON.parse(sessionStorage.getItem('engRead'));
 var parentElem = document.getElementsByClassName('reading');
+if(!parentElem[0]){
+	parentElem = document.getElementsByClassName('studing')
+}
 var textAreas = document.getElementsByTagName('TEXTAREA');
 if(parentElem[0]){
 	var box = document.createElement("Div");
@@ -8,16 +11,19 @@ if(parentElem[0]){
 	parentElem[0].appendChild(box);
 	var btnSmall = document.createElement('Button');
 	btnSmall.setAttribute('id', 'btnSmall');
+	btnSmall.setAttribute('class', 'btnSize');
 	btnSmall.textContent = 'A';
 	btnSmall.style.fontSize = '12px';
 	box.appendChild(btnSmall);
 	var btnMedium = document.createElement('Button');
 	btnMedium.setAttribute('id', 'btnMedium');
+	btnMedium.setAttribute('class', 'btnSize');
 	btnMedium.textContent = 'A';
 	btnMedium.style.fontSize = '16px';
 	box.appendChild(btnMedium);
 	var btnBig = document.createElement('Button');
 	btnBig.setAttribute('id', 'btnBig');
+	btnBig.setAttribute('class','btnSize');
 	btnBig.textContent = 'A';
 	btnBig.style.fontSize = '22px';
 	box.appendChild(btnBig);

@@ -126,7 +126,9 @@ h2{
 .reading{
 	width:100%;
 }
-
+.new{
+    text-shadow:2px 2px 4px rgba(0,0,0,0.5);
+}
 textarea{
 	padding: 10px;
 	font-size: 1.1rem;
@@ -152,7 +154,7 @@ textarea:nth-child(6){
 	color: #224780;	
 	margin-bottom: 5px;
 }
-.reading button{
+.btnSize{
 	border-top: 3px solid #eefddc;
 	border-left: 3px solid #eefddc;
 	border-bottom: 3px solid #5d88a9;	
@@ -162,11 +164,11 @@ textarea:nth-child(6){
 	padding: 3px 10px;
 }
 
-.reading button:hover{
+.btnSize:hover{
 	color: #FF6600;
 	background-color: #EAEE84; 
 }
-.reading button:active{
+.btnSize:active{
 	border-top: 3px solid #5d88a9;
 	border-left: 3px solid #5d88a9;
 	border-bottom: 3px solid  #eefddc;
