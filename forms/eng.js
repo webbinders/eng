@@ -5,7 +5,7 @@ if(!parentElem[0]){
 	parentElem = document.getElementsByClassName('studing')
 }
 var textAreas = document.getElementsByTagName('TEXTAREA');
-if(parentElem[0]){
+if(parentElem[0] && textAreas[0]){
 	var box = document.createElement("Div");
 	box.setAttribute('id','boxBtn');
 	parentElem[0].appendChild(box);
