@@ -47,7 +47,7 @@ CONTENT;
 $footer = <<<FOOTER
 	<footer>
         <div class="center-block" id="contacts">
-            Автор и разработчик сайта <a href = "https://www.facebook.com/gal.sergey">Сергей Галбур</a>, дизайн <a href = "https://www.facebook.com/profile.php?id=100012033014706">София Брегова</a>.  
+            Автор и разработчик сайта <a href = "https://www.facebook.com/gal.sergey" title="Facebook account Gal Sergey">Сергей Галбур</a>, дизайн <a href = "https://www.facebook.com/profile.php?id=100012033014706"  title="Facebook account Софія Брегова">София Брегова</a>.  
         </div>
 		<div class="center-block">
 			$socButtons

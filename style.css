@@ -225,8 +225,20 @@ button.active_mode{
     
 }
 #contacts{
+	font-size: 1.1em;
 	text-align: center;
 	color: #313473;
+}
+#contacts a{
+	text-decoration: none;
+	margin: 0 5px;
+	padding: 4px 7px;
+	
+	border: 2px solid #F3FCE0;
+	background-color: #85CDD5;
+}
+#contacts a:hover{
+	color: #F3FCE0;
 }
 @media screen and (max-width: 890px){
 	.logo{	
