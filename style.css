@@ -224,6 +224,10 @@ button.active_mode{
    
     
 }
+#contacts{
+	text-align: center;
+	color: #313473;
+}
 @media screen and (max-width: 890px){
 	.logo{	
 		margin: 10px 0;

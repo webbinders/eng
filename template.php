@@ -46,8 +46,8 @@ $t_content = <<<CONTENT
 CONTENT;
 $footer = <<<FOOTER
 	<footer>
-        <div>
-            Авторы и разработчики сайта <a href = "https://www.facebook.com/profile.php?id=100012033014706">София Брегова</a> и <a href = "https://www.facebook.com/gal.sergey">Сергей Галбур</a>
+        <div class="center-block" id="contacts">
+            Автор и разработчик сайта <a href = "https://www.facebook.com/gal.sergey">Сергей Галбур</a>, дизайн <a href = "https://www.facebook.com/profile.php?id=100012033014706">София Брегова</a>.  
         </div>
 		<div class="center-block">
 			$socButtons
