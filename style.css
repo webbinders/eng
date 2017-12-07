@@ -179,10 +179,21 @@ textarea:nth-child(6){
 #btn_reset_text{
 	position: absolute;
 	right: 32px;
-	top: 250px;
-	padding: 1px 5px;
+	top: 282px;
+	padding: 0px 5px;
 	border: 2px solid #95ae76;
+	color:  #be4800;
+
 	background-color: rgba(255,204,114,0.5);
+}
+#btn_reset_text:hover{
+		color: #F6FFC4;
+		background-color: rgb(255,204,114);
+}
+
+#btn_reset_text:active{
+	color: #FF6600;
+	background-color: #F6FFC4;
 }
 #boxBtn{
 	position: absolute;
