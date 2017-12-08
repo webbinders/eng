@@ -20,7 +20,7 @@ class pageClass {
     private $header;
     private $content ;
     private $footer ;
-    private $templatePath = "../template.php";
+    private $templatePath = "/template.php";
     /*
      * Конструктор
      */
@@ -37,7 +37,7 @@ class pageClass {
                     
             }
         }
-        include "/template.php";
+        include __DIR__."/../template.php";
         
         $this->head = $head;
         $this->header = $header;
