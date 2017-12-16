@@ -28,7 +28,7 @@ $btn_reset_text = new ButtonElement(array(
     'type' => 'button',
 ));
 
-    //создаем и отображаем объект абзаца для отображения читаемого текста'];
+    //создаем  объект абзаца для отображения читаемого текста'];
     $text_area = new TextAreaElement(array(
         'id' => 'text_area',
         'readonly' => 'readonly',
@@ -112,7 +112,7 @@ $trans_area = new TextAreaElement(array(
 
 
 //если форма запускается впервые или текст отображается впервые
-if (isset($_POST['btn_reset_text']) || isset($_POST['btn_read']) || isset($_POST['text_area']) && ($_POST['text_area']=='')){
+if (count($_POST) == 0 || isset($_POST['btn_reset_text']) || isset($_POST['btn_read']) || isset($_POST['text_area']) && ($_POST['text_area']=='')){
     //создаем текстовую область для читаемого текста и добавляем ее на форму
     $text_area = new TextAreaElement(array(
         'id' => 'text_area',

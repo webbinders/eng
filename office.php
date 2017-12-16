@@ -13,8 +13,8 @@
 
         
     $content = '';
-    if (!isset($_SESSION['mode'])) {
-        $_SESSION['mode']='';
+    if (!isset($_SESSION['mode']) || $_SESSION['mode'] == 'mode') {
+        $_SESSION['mode']='mode_read';
     }
 
     if (isset($_SESSION['msg'])){
@@ -55,7 +55,7 @@
     $content .= $menu_form -> toString();*/
     
         
-        
+      
 switch ($_SESSION['mode']) {
     
     //----------------------
