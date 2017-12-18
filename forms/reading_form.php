@@ -136,7 +136,11 @@ else{
 }//end если форма запускается впервые или текст отображается впервые
 
 //если нажата кнопка "Обработать текст" и текст не пустой или нажата кнопка добавить перевод
-if (isset($_POST['text_area']) && ($_POST['text_area']!='') && isset($_POST['btn_handling_text']) || isset($_POST['btn_add'])){
+if (isset($_POST['text_area']) && ($_POST['text_area']!='') && isset($_POST['btn_handling_text']) 
+        || isset($_POST['btn_add']) 
+        || isset($_POST['btn_view_example']) 
+        || isset($_POST['btn_show_native'])
+        ){
     //
     $my_form->addInputForm($text_area);
     $my_form->addInputForm($btn_reset_text); 
@@ -161,7 +165,7 @@ if (isset($_POST['btn_find'])){
 
     //если была нажата "Показать примеры
     if (isset($_POST['btn_view_example'])) {
-        $my_form->addInputForm($text_area);
+       
         
         if (isset($_SESSION['exampleList'])) {//возможно эта проверка и не нужна, т.к. кнопка не должна быть показана, если примеров нет
              include  __DIR__ . '/../forms/functions.php';
@@ -180,7 +184,7 @@ if (isset($_POST['btn_find'])){
     //Если была нажата "Показать перевод примера"
     if (isset($_POST['btn_show_native'])) {
         
-        $my_form->addInputForm($text_area);
+        
                 
         //получаем из переменной список примеров
          include  __DIR__ . '/../forms/functions.php';
