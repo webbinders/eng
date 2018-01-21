@@ -526,51 +526,63 @@ class Word{
         
         //Добавляем слово в тезарус, если его там еще нет
         if (isset($property_arr['id'])){
-            $id = $this->id = $property_arr['id'];
-            //то выборку свойств проводим по id
-            //составляем запрос на поиск слова тезарусе по id
-            $query = "SELECT * FROM thesaurus  WHERE id = '$id'";
-            //$query = "SELECT thesaurus.*, $table_name.*  FROM thesaurus, $table_name WHERE thesaurus.id = '$id' AND $table_name.id ='$id';";
-            //echo $query;
-            //Выполняем запрос
-            $result = queryRun($query,'Ошибка соединения в конструкторе класса Word'); 
-            
-            //если запись не найдена сообщаем о проблеме
-            if (mysql_num_rows($result) == 0){
-                //echo 'error';
-                die(' id is empty :'.$id . mysql_error());
-            }
-            
-            $row = mysql_fetch_array($result);
-            //в соответствии с переданными параметрами устанавливаем свойства слова
-            $this->foreign = $row['foreign'];
-            $this->frequency = $row['frequency'];
-            $this->examples = $row['examples'];
-           
-            if (isset($property_arr['native'])){
-                $this->native = $row['native'].'\n'.$property_arr['native'];
-            }
-            else {
-                $this->native = $row['native'];                
-            }
-            
-            //создаем запрос на считывание свойств слова из личной таблицы
-            $query = "SELECT * FROM $table_name  WHERE id = '$id'";
-            $result = queryRun($query,"Ошибка соединения в конструкторе класса Word при стении из таблицы $table_name");  
-            //если слова еще нет в личной таблице
-            if (mysql_num_rows($result) == 0){
-                //добавляем слово в личную таблицу с установкой свойств объекта-слово по умолчанию
-                $this->addToPersonTab($id, $table_name);
+            if(isset($property_arr['foreign']) && isset($property_arr['native']) && isset($property_arr['examples']) && isset($property_arr['frequency'])){
+                $id = $this->id = $property_arr['id'];
+                $this->foreign = $property_arr['foreign'];
+                $this->frequency = $property_arr['frequency'];
+                $this->examples = $property_arr['examples'];
+                
             }
             else{
+                $id = $this->id = $property_arr['id'];
+                //то выборку свойств проводим по id
+                //составляем запрос на поиск слова тезарусе по id
+                $query = "SELECT * FROM thesaurus  WHERE id = '$id'";
+                //$query = "SELECT thesaurus.*, $table_name.*  FROM thesaurus, $table_name WHERE thesaurus.id = '$id' AND $table_name.id ='$id';";
+                //echo $query;
+                //Выполняем запрос
+                $result = queryRun($query,'Ошибка соединения в конструкторе класса Word'); 
+
+                //если запись не найдена сообщаем о проблеме
+                if (mysql_num_rows($result) == 0){
+                    //echo 'error';
+                    die(' id is empty :'.$id . mysql_error());
+                }
+
                 $row = mysql_fetch_array($result);
-                $this->lastData = $row['studDate'];
-                $this->level = $row['level'];
-                $this->answers = $row['answers'];
-                $this->shows = $row['shows'];
-                //$this->examples = $row['examples'];
-                $this->stud = $row['stud'];
+                //в соответствии с переданными параметрами устанавливаем свойства слова
+                $this->foreign = $row['foreign'];
+                $this->frequency = $row['frequency'];
+                $this->examples = $row['examples'];
+
+                if (isset($property_arr['native'])){
+                    $this->native = $row['native'].'\n'.$property_arr['native'];
+                }
+                else {
+                    $this->native = $row['native'];                
+                }
+            
             }
+            if(isset($_SESSION['user_id'])){
+                //создаем запрос на считывание свойств слова из личной таблицы
+                $query = "SELECT * FROM $table_name  WHERE id = '$id'";
+                $result = queryRun($query,"Ошибка соединения в конструкторе класса Word при стении из таблицы $table_name");  
+                //если слова еще нет в личной таблице
+                if (mysql_num_rows($result) == 0){
+                    //добавляем слово в личную таблицу с установкой свойств объекта-слово по умолчанию
+                    $this->addToPersonTab($id, $table_name);
+                }
+                else{
+                    $row = mysql_fetch_array($result);
+                    $this->lastData = $row['studDate'];
+                    $this->level = $row['level'];
+                    $this->answers = $row['answers'];
+                    $this->shows = $row['shows'];
+                    //$this->examples = $row['examples'];
+                    $this->stud = $row['stud'];
+                }
+            }
+
         }
         else{
             //то выборку производим по слову. Если его не находим, то добавляем
@@ -610,7 +622,9 @@ class Word{
                 ///Определяем id добавленной записи
                 $id = mysql_insert_id();
                 //добавляем слово в личную таблицу с установкой свойств объекта-слово
-                $this->addToPersonTab($id, $table_name);
+                if(isset($_SESSION['user_id'])){
+                    $this->addToPersonTab($id, $table_name);
+                }
             }
             //если слово найдено
             else{
@@ -628,26 +642,28 @@ class Word{
                 $query = "UPDATE thesaurus SET `frequency` = $new_frequency WHERE `id` = $id;";
                 $result = queryRun($query,'Ошибка при добавлении frecancy в thesaurus');
                 
-                
-                //создаем запрос на получение данных из личной таблицы
-                $query = "SELECT * FROM $table_name WHERE `id` = $id;";
-                $resFromPersonal = queryRun($query,'Ошибка при получении данных из персональной таблицы');
-                //если в личной таблице еще нет этого слова
-                if (mysql_num_rows($resFromPersonal) == 0){
-                    //добавляем слово в личную таблицу с установкой свойств объекта-слово
-                    $this->addToPersonTab($id, $table_name);
-                }
-                //если слово уже есть в личной таблице
-                else{
-                    //создаем запрос на изменение данных в личной таблице
-                    $rowPersonal = mysql_fetch_array($resFromPersonal);
-                    $shows = $this->shows  = $rowPersonal['shows'] + 1;
-                    $answers = $this->answers = $rowPersonal['answers'];
-                    $studyingLevel = $this->level = $answers/$shows;
+                if(isset($_SESSION['user_id'])){
+                    
+                    //создаем запрос на получение данных из личной таблицы
+                    $query = "SELECT * FROM $table_name WHERE `id` = $id;";
+                    $resFromPersonal = queryRun($query,'Ошибка при получении данных из персональной таблицы');
+                    //если в личной таблице еще нет этого слова
+                    if (mysql_num_rows($resFromPersonal) == 0){
+                        //добавляем слово в личную таблицу с установкой свойств объекта-слово
+                        $this->addToPersonTab($id, $table_name);
+                    }
+                    //если слово уже есть в личной таблице
+                    else{
+                        //создаем запрос на изменение данных в личной таблице
+                        $rowPersonal = mysql_fetch_array($resFromPersonal);
+                        $shows = $this->shows  = $rowPersonal['shows'] + 1;
+                        $answers = $this->answers = $rowPersonal['answers'];
+                        $studyingLevel = $this->level = $answers/$shows;
 
-                    //создаем запрос на изменение данных в личной таблице
-                    $query = "UPDATE $table_name SET `shows` = $shows, `level` = $studyingLevel, `studDate` = NOW()  WHERE `id` = $id;";
-                    $result = queryRun($query,'Ошибка при обновлении личной таблицы');
+                        //создаем запрос на изменение данных в личной таблице
+                        $query = "UPDATE $table_name SET `shows` = $shows, `level` = $studyingLevel, `studDate` = NOW()  WHERE `id` = $id;";
+                        $result = queryRun($query,'Ошибка при обновлении личной таблицы');
+                    }
                 }
                 
                 
