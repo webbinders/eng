@@ -27,8 +27,10 @@
         header("Location: http://".$_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF']).'/joining.php');
 
     }
+    if (isset($_POST['btn_search'])) $_SESSION['mode'] = 'mode_search';
     if (isset($_POST['btn_read']) || !isset($_SESSION['mode'])) $_SESSION['mode'] = 'mode_read';
     if (isset($_POST['btn_stud']) || isset($_POST['btn_start_stud'])){
+       
         
         $_SESSION['mode'] = 'mode_stud';   
         //определяем количество слов в старом списке для изучения
@@ -54,10 +56,18 @@
     /*include_once 'forms/menu_form.php';//подключаем файл формы меню
     $content .= $menu_form -> toString();*/
     
-        
-      
+   
 switch ($_SESSION['mode']) {
-    
+    case 'mode_search':
+        //если нажата кнопка "Найти"
+        if(isset($_POST['btnFind'])){
+            include_once 'forms/search_form_handler.php';
+            $result = findBtnHandler();
+            $content .= resultToHTML($result);
+        }
+        include_once  'forms/search_form.php';
+        $content .= $my_form ->toString();
+        break;
     //----------------------
     case 'mode_read':
     //---------------------
