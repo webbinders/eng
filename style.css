@@ -279,3 +279,17 @@ button.active_mode{
 		
 	}
 }
+
+.foreign_section{
+    display: flex;
+     flex-direction:row  ;
+}
+.head{
+    margin: 10px;
+    display: flex;
+     flex-direction: column ;
+}
+.div_word{
+      display: flex;
+     flex-direction: column ;  
+}
