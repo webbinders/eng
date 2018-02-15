@@ -60,11 +60,7 @@
 switch ($_SESSION['mode']) {
     case 'mode_search':
         //если нажата кнопка "Найти"
-        if(isset($_POST['btnFind'])){
-            include_once 'forms/search_form_handler.php';
-            $result = findBtnHandler();
-            $content .= resultToHTML($result);
-        }
+        //include_once 'forms/search_form_handler.php';
         include_once  'forms/search_form.php';
         $content .= $my_form ->toString();
         break;

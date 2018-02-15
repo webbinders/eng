@@ -45,6 +45,7 @@
             }
          
  }
+ 
  function dysplay_example($form){
 //получаем из переменной список примеров
         $exampleList = unserialize($_SESSION['exampleList']);

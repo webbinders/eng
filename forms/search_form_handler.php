@@ -1,4 +1,25 @@
 <?php
+//если нажата кнопка "Найти"
+if(isset($_POST['btnFind'])){
+    if(isset($_SESSION['find'])) unset($_SESSION['find']);
+    $result = findBtnHandler();
+    if($result){
+        $arrWords = resToArr($result);
+        //$strFindHTML = arrayToHTML($arrWords);
+        $_SESSION['find'] = serialize($arrWords);
+    }
+}
+//если нажата кнопка "Добавить в список для изучения"
+if(isset($_POST['btnAdd'])){
+    //определяем id нажатой кнопки
+    $btnId = key($_POST['btnAdd']);
+    
+    $arrWords = unserialize($_SESSION['find']);
+    //var_dump($arrWords);
+    
+    $arrWords[$btnId]->addToStudList();
+    $_SESSION['find'] = serialize($arrWords);
+}
 /*
  * Проверяет заполнение полей foreign формы
  */
@@ -27,8 +48,7 @@ function ForeignBoxToArray(){
 function findBtnHandler(){
     $resultFind = NULL;
     $foreignArray = ForeignBoxToArray();
-    //var_dump($foreignArray);
-    //var_dump($_POST);
+
     
     $native = trim($_POST['native_box']);
     //проверяем заполнение полей для английского
@@ -61,9 +81,8 @@ function findBtnHandler(){
             //Если поле с переводом заполнено, с английским не заполнено
             else {
                 $resultFind = findNativeRecordset($native);
-            }
-            return $resultFind;
-            exit();
+            }           
+           
         }
         
     }
@@ -71,10 +90,9 @@ function findBtnHandler(){
 
     return $resultFind;
 }
-function findForeignNativeRecordset($arrParam, $order, $strNative){
-    $queryForeign = buildQueryForForeign($arrParam, $order);
-    $query = $queryForeign . " AND `native` LIKE '%$strNative%'"; 
-    echo $query;
+function findForeignNativeRecordset($arrForeign, $order, $strNative){
+    $queryForeign = buildQueryForForeign($arrForeign, $order);
+    $query = $queryForeign . " AND `native` LIKE '%$strNative%'";     
     return findRecordSet($query);
 }
 
@@ -125,30 +143,41 @@ function findNativeRecordset($str){
 
 }
 /*
- * Преобразовывает ссылку на ресурс, содержащий результаты поиска в строку HTML
+ * Преобразует ссылку на ресурс в массив объектов-слов
  */
-function resultToHTML($result){
-    $htmlStr = '';
-    if(mysql_num_rows($result)){
-        while ($row = mysql_fetch_array($result)){
-            //в соответствии с переданными параметрами устанавливаем свойства слова
-            $foreign = $row['foreign'];
-            $frequency = $row['frequency'];
-            $examples = $row['examples'];    
-            $native = $row['native'];                
-            $htmlStr .= word_as_html($foreign, $native, $examples);
+function resToArr($res){
+    $resArr = array();
+    if(mysql_num_rows($res)){
+        while ($row = mysql_fetch_array($res)){
+            $objWord = new Word($row);
+            $resArr[$objWord->id] =$objWord;
         
         }
-        return $htmlStr;
+        
+        return $resArr;
     }
- else {
-        return '<p>Поиск не дал результатов</p>';
-    }
+
 }
-function word_as_html($foreign, $native, $examples){
+/*
+ * Преобразовывает ссылку на ресурс, содержащий результаты поиска в строку HTML
+ */
+function arrayToHTML($wordArr){
+    $htmlStr = '';
+    if(sizeof($wordArr) > 0){
+        foreach ($wordArr as $key => $value) {
+            $id = $value->id;
+            $foreign = $value->foreign;
+            $native = $value->native;
+            $htmlStr .= word_as_html($id, $foreign, $native);
+        }
+    }
+    return $htmlStr;
+}
+function word_as_html($id, $foreign, $native, $examples){
     $html = "<div class = 'word'>";
     $html .= "<div class = 'foreign' >$foreign</div><br>";
     $html .= "<div class = 'native' >$native</div><br>";
+    $html .= "<button type = 'submit' name = 'stud_btn[{$id}]'> Добавить в список для изучения </button>";
     $html .= "</div>";
     return $html;
     

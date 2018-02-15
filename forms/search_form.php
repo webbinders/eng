@@ -1,7 +1,7 @@
 <?php
 
 include_once __DIR__ . '/../classes/class_form.php';
-
+include 'search_form_handler.php';
  //создаем объект формы
 $my_form=new HtmlForm(array(
    'class'=>'search',
@@ -31,18 +31,21 @@ $foreign_section = new divElement(array(
         $foreign_box1 = new TextElement(array(
             
             'name' => 'foreign_box[1]',
+            'value' => isset($_POST['foreign_box'][1]) ? $_POST['foreign_box'][1] : '',
             'class' => 'foreign_box'
 
         ));
         $foreign_box2 = new TextElement(array(
 
             'name' => 'foreign_box[2]',
+            'value' => isset($_POST['foreign_box'][2]) ? $_POST['foreign_box'][2] : '',
             'class' => 'foreign_box'
         ));
 
         $foreign_box3 = new TextElement(array(
 
             'name' => 'foreign_box[3]',
+            'value' => isset($_POST['foreign_box'][3]) ? $_POST['foreign_box'][3] : '',
             'class' => 'foreign_box'
         ));
 
@@ -123,4 +126,49 @@ $btnFind=new ButtonElement(array(
     'value'=>'Найти'
 ));
 $my_form->addInputForm($btnFind);
-//var_dump($my_form) ;
+
+//если существует список результатов поиска (примеров)
+if(isset($_SESSION['find'])){
+    $arrWords = unserialize($_SESSION['find']);
+    if(sizeof($arrWords)){
+        foreach ($arrWords as $word){
+        $div_found_box = new divElement(array(
+            'class' => 'div_found_box',
+        ));
+        $div_found_word = new divElement(array(
+            'class'=>'found_word',
+        ));
+        $div_foreign = new divElement(array(
+            'class'=>'foreign',
+            'text'=> $word->foreign,
+        ));
+        $div_native = new divElement(array(
+            'class' => 'native',
+            'text'=> $word->native,
+        ));
+        $div_found_word->addChild($div_foreign);
+        $div_found_word->addChild($div_native);
+        $div_found_box ->addChild($div_found_word);
+        
+        if ($word->stud == 0){
+            $btnAdd = new ButtonElement(array(
+                'type'=>'submit',
+                'name'=> 'btnAdd'."[{$word->id}]",
+                'value' => 'Добавить в список для изучения'
+            ));
+            $div_found_box ->addChild($btnAdd);
+        }
+        
+        
+        $my_form->addInputForm($div_found_box);
+    }
+    }
+    else{
+    $msg = new pElement(array(
+        'class' => 'nofound',
+        'text' => 'Поиск не дал результата'
+    ));
+    $my_form->addInputForm($msg);
+}
+}
+
