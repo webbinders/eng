@@ -379,7 +379,7 @@ class ChbxElement extends HtmlFormElement{
          else{
              $checkbox='';
          }
-         if(isset($this->checked)){
+         if(isset($this->checked) || $this->value == 1){
              $checked = "checked ";
          }else{
              $checked ='';
