@@ -131,6 +131,7 @@ $my_form->addInputForm($btnFind);
 //если существует список результатов поиска (примеров)
 if(isset($_SESSION['find'])){
     $arrWords = unserialize($_SESSION['find']);
+    unset($_SESSION['find']);
     if(sizeof($arrWords)){
         foreach ($arrWords as $word){
         $div_found_box = new divElement(array(
