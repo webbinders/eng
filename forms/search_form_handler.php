@@ -108,24 +108,37 @@ function buildQueryForForeign($arrParam, $order) {
     if ($order){
         foreach ($arrParam as $key => $value) {
             if($value['asPart_chb']){
-                $arrLike[] = $value['foreign_box'];
+                $arrLike[] = '.*'.$value['foreign_box'].'.*';
             }
             else{
-                $arrLike[] ="[[:<:]]".$value['foreign_box']."[[:>:]]";
+                if(strlen($value['foreign_box'])>0){
+                    $arrLike[] ='.*' . "[[:<:]]".$value['foreign_box']."[[:>:]]";
+                }
+                else{
+                    $arrLike[] = "";
+                }
+                
             }
         }
-        $query = "SELECT * FROM `thesaurus` WHERE `foreign` RLIKE '.*{$arrLike[0]} .*{$arrLike[1]}.*{$arrLike[2]}.*'";
+        $query = "SELECT * FROM `thesaurus` WHERE `foreign` RLIKE '{$arrLike[0]} {$arrLike[1]}{$arrLike[2]}.*'";
     }else{
         //если не надо соблюдать последовательность
         foreach ($arrParam as $key => $value){
             if($value['asPart_chb']){
                 $arrLike[] ="LIKE '%{$value['foreign_box']}%'";
             }else{
-                $arrLike[] ="RLIKE '[[:<:]]".$value['foreign_box']."[[:>:]]'";
+                if(strlen($value['foreign_box'])>0){
+                    $arrLike[] ="RLIKE '[[:<:]]".$value['foreign_box']."[[:>:]]'";
+                }
+                else{
+                    $arrLike[] = "LIKE '%%'";
+                }
+                
             }
         }
         $query = "SELECT * FROM `thesaurus` WHERE `foreign` {$arrLike[0]} AND `foreign`  {$arrLike[1]} AND `foreign`  {$arrLike[2]}";
     }
+    echo $query;
     return $query;
 }
 

@@ -57,18 +57,18 @@ $foreign_section = new divElement(array(
         ));
         $asPart_chb1 = new ChbxElement(array(
             'name' => 'asPart_chb[1]',
-            'checked' => 'checked'
+            'value' => isset($_POST['asPart_chb'][1])  ? 1 : 0,
             
 
         ));
         $asPart_chb2 = new ChbxElement(array(
             'name' => 'asPart_chb[2]',
-            'checked' => 'checked'
+            'value' => isset($_POST['asPart_chb'][2])  ? 1 : 0,
             
         ));
         $asPart_chb3 = new ChbxElement(array(
             'name' => 'asPart_chb[3]',
-            'checked' => 'checked'
+            'value' => isset($_POST['asPart_chb'][3])  ? 1 : 0,
             
         ));
     
@@ -102,7 +102,8 @@ $div_order_head = new divElement(array(
     'text' => 'Учитывать порядок'
 ));
 $chb_order = new ChbxElement(array(
-    'name'=>'chb_order'
+    'name'=>'chb_order',
+    'value' => isset($_POST['chb_order'])  ? 1 : 0,
 ));
 $div_order->addChild($div_order_head);
 $div_order->addChild($chb_order);
@@ -114,7 +115,7 @@ $my_form->addInputForm($foreign_section);
 $native_box = new TextElement(array(
     'label' => 'На русском',
     'name' => 'native_box',
-    ''
+    'value' => isset($_POST['native_box']) ? $_POST['native_box']:'',
 ));
 
 $my_form->addInputForm($native_box);
