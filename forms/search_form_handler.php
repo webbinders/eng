@@ -138,7 +138,7 @@ function buildQueryForForeign($arrParam, $order) {
         }
         $query = "SELECT * FROM `thesaurus` WHERE `foreign` {$arrLike[0]} AND `foreign`  {$arrLike[1]} AND `foreign`  {$arrLike[2]}";
     }
-    echo $query;
+    
     return $query;
 }
 
