@@ -60,6 +60,9 @@
 switch ($_SESSION['mode']) {
     case 'mode_search':
         //если нажата кнопка "Найти"
+        
+        //если нажата кнопка "Поиск", т.е. только вошли в режим, удаляем результаты прошлого поиска
+        if(isset($_POST['btn_search'])) unset($_SESSION['find']);
         //include_once 'forms/search_form_handler.php';
         include_once  'forms/search_form.php';
         $content .= $my_form ->toString();
