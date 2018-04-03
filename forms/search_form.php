@@ -161,6 +161,14 @@ if(isset($_SESSION['find'])){
             $div_found_box ->addChild($btnAdd);
         }
         
+        if($_SESSION['login']."@ukr.net" == "gal_sergey@ukr.net"){
+            $btnDel = new ButtonElement(array(
+                'type'=>'submit',
+                'name'=> 'btnDel'."[{$word->id}]",
+                'value' => 'Удалить'
+            ));  
+            $div_found_box ->addChild($btnDel);
+        }
         
         $my_form->addInputForm($div_found_box);
     }
