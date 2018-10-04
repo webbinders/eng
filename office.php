@@ -101,9 +101,11 @@ var_dump($dictionary);echo '<br>';*/
                 //если пользователь не смотрел перевод слова, считается что он его знает
                 if($word->stud ==0 ||( $word->stud == 1 && time() -$word->lastData > $CRITERION_OF_REPETITION)){
                     
-                    //$word->shows++;
+                    $word->answers += $frecancy;
+                    $word->shows+= frecancy;
+                    $word->stud = 0;
                 }
-                $word->answers+=$frequency;
+                //$word->answers+=$frequency;
                 $answers = $word->answers;
                 $shows = $word->shows;
                 $level = $word->level = $answers / $shows;
