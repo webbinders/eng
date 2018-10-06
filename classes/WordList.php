@@ -122,7 +122,7 @@ class StudList{
      * Возвращает массив id слов, которые на данный момент находятся в списке для изучения
      * Список id слов у которых stud = 1 дублируется в таблице users в виде строки содержащей id разделенные запятыми 
      */
-    function getOldStudList($user_id){
+    static function getOldStudList($user_id){
         $query = "SELECT studList FROM users WHERE id = $user_id;";
         $result = queryRun($query, "error in time reading table users");
         $strOldStudList = mysql_result($result,0,0);
@@ -727,6 +727,30 @@ class Word{
     }
     function getForeign(){
         return $this->foreign;
+    }
+    /*
+     * Проверяет существование записей с id перечисленными в строке $examples.
+     * Несуществующие id удаляются из строки
+     * $examples - строка содержащая id через запятую
+     */
+    function checkerIdExammles($examples){
+        $checkedId = '';
+        if(strlen($examples)>0){
+            $query = "SELECT * FROM thesaurus WHERE id IN ($examples)";
+            $result = queryRun($query,'Error in $query');
+            while ($row = mysql_fetch_array($result,MYSQL_ASSOC)){
+                $checkedId .= $row['id'].',';
+            }
+            $checkedId = substr($checkedId, 0,-1);
+            return $checkedId;
+        }
+        $query = "SELECT * FROM thesaurus WHERE id IN ($examples)";
+        $result = queryRun($query,'Error in $query');
+        while ($row = mysql_fetch_array($result,MYSQL_ASSOC)){
+            $checkedId .= $row['id'].',';
+        }
+        $checkedId = substr($checkedId, 0,-1);
+        return $checkedId;
     }
 
 }
