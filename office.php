@@ -93,7 +93,10 @@ var_dump($dictionary);echo '<br>';*/
         if (isset($_POST['btn_reset_text'])  && ($_POST['text_area'] != '')){
             $table_name = 'u'.$_SESSION['user_id'];
             //var_dump($dictionary);
-               
+            $user_id = $_SESSION['user_id'];
+            $strStud = StudList::getOldStudList($user_id);
+            $arrStudListId = explode(',', $strStud);
+            
             foreach ($dictionary->wordsList as $word) {
                 //частота слова в тексте                
                 $frequency=$dictionary->wordFrequencyMap[htmlentities($word->foreign)];
@@ -101,9 +104,13 @@ var_dump($dictionary);echo '<br>';*/
                 //если пользователь не смотрел перевод слова, считается что он его знает
                 if($word->stud ==0 ||( $word->stud == 1 && time() -$word->lastData > $CRITERION_OF_REPETITION)){
                     
-                    $word->answers += $frecancy;
-                    $word->shows+= frecancy;
+                    $word->answers += $word->frequency;
+                    $word->shows+= $word->frequency;
                     $word->stud = 0;
+                    $key = array_search($word->id, $arrStudListId);
+                    if($key) unset ($arrStudListId[$key]);
+                        
+                  
                 }
                 //$word->answers+=$frequency;
                 $answers = $word->answers;
@@ -117,6 +124,10 @@ var_dump($dictionary);echo '<br>';*/
                 
                  $result = queryRun($query,'Ошибка при обновлении личной таблицы ');
             }
+            $strId = implode(',', $arrStudListId);
+            $query ="UPDATE `users` SET `studList`='$strId' WHERE `id`= $user_id";
+            $result = queryRun($query,"Ошибка обновления таблицы `users` во время выполнения изменения списка для изучения"); 
+            
             $_POST['text_area'] = '';
             unset($_SESSION['dictionary']);
             //var_dump($dictionary);
