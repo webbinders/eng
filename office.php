@@ -102,7 +102,7 @@ var_dump($dictionary);echo '<br>';*/
                 $frequency=$dictionary->wordFrequencyMap[htmlentities($word->foreign)];
                
                 //если пользователь не смотрел перевод слова, считается что он его знает
-                if($word->stud ==0 ||( $word->stud == 1 && time() -$word->lastData > $CRITERION_OF_REPETITION)){
+                if($word->stud ==0 ||( $word->stud == 1 && time() - $word->lastData > $CRITERION_OF_REPETITION)){
                     
                     $word->answers += $word->frequency;
                     $word->shows+= $word->frequency;
@@ -142,6 +142,7 @@ var_dump($dictionary);echo '<br>';*/
             //получаем перевод слова
             $translate = $word->getNative();
             //добавляем слово в список для изучения
+            $word->stud = 1;
             $studList = $word->addToStudList();
             //Вставляем перевод в тестовое поле
             $_POST['trans_area'] = $translate;  
