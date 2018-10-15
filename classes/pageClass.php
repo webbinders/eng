@@ -75,7 +75,7 @@ PART1;
         $socButtonPart2 =
         <<<PART2
             <div class="fb-like" 
-                data-href="http://www.eng.zzz.com.ua" 
+                data-href="http://www.eng.student.kr.ua" 
                 data-layout="standard" 
                 data-action="like" 
                 data-size="small" 
