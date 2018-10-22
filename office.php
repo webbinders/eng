@@ -97,12 +97,14 @@ var_dump($dictionary);echo '<br>';*/
             $strStud = StudList::getOldStudList($user_id);
             $arrStudListId = explode(',', $strStud);
             
+            
             foreach ($dictionary->wordsList as $word) {
                 //частота слова в тексте                
                 $frequency=$dictionary->wordFrequencyMap[htmlentities($word->foreign)];
-               
+               $interval = time() - getTimestamp($word->lastData) ;
+               echo $interval;
                 //если пользователь не смотрел перевод слова, считается что он его знает
-                if($word->stud ==0 ||( $word->stud == 1 && time() - $word->lastData > $CRITERION_OF_REPETITION)){
+                if($word->stud ==0 ||( $word->stud == 1 && ($interval > $CRITERION_OF_REPETITION))){
                     
                     $word->answers += $word->frequency;
                     $word->shows+= $word->frequency;
@@ -393,15 +395,14 @@ function testing($studList, $button){
                                 
                 $CRITERION_OF_REPETITION = 10*60*60;//10 часов
          
-                //если дата не сегодняшняя
+                //определяем текущую дату
                 $today =  time();
+                
+                
+                //если дата не сегодняшняя
                 if($today - $currentWordTimestamp > $CRITERION_OF_REPETITION){
                     //удаляем слово из списка для изучения в БД
                     $currentWord->stud = 0;
-                    //echo '!!!!!!!!!!';
-                    
-                    
-                    
                     //echo sizeof($studList->studList).'-------<br>';
                     //Усстанавливаем текущую дату в свойство объекта-слово
                     $currentWord->lastData = date("Y-m-d H:i:s",  time());
