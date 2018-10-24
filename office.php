@@ -410,6 +410,9 @@ function testing($studList, $button){
                     unset($studList->repeteStudListID[$currentWord->id]);
                     
                 }
+                else{
+                    $currentWord->stud = 2;
+                }
                 //копируем значения текстовых областей в свойства
                 $currentWord->foreign = correct_foreign($_POST['question_text_area']);  
                 $currentWord->native = htmlentities($_POST['answer_text_area']); 
