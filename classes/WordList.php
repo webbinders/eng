@@ -43,7 +43,7 @@ class StudList{
             $strList = $strOldStudList;
         }
         if($strList !=''){
-             $query = "UPDATE users SET `studList` = '$strList' WHERE id = $user_id;";
+            $query = "UPDATE users SET `studList` = '$strList' WHERE id = $user_id;";
 
             $result = queryRun($query, "ошибка при обновлении списка для изучения (таблица users");
 
@@ -58,9 +58,40 @@ class StudList{
             $result = queryRun($query, "ошибка 333 при составлении списка для изучения");
 
                 while ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
+                    /*if (date_default_timezone_get()) {
+                        $tz = date_default_timezone_get() ;
+                    }
+                    if (ini_get('date.timezone')) {
+                        $tz = date_default_timezone_get() ;
+                    }
+                     * 
+                     */
+                    $studDate = $row['studDate'];
+                    
+                    $query = "SELECT UNIX_TIMESTAMP('$studDate');";
+                    $result2 = queryRun($query, "ошибка при получении метки времени при выполнении запроса $query");
+                     
+                    $studDate = mysql_result($result2, 0);
+                    
+                    /*
+                    $studDate =  new DateTime($row['studDate']);
+                    $timezone = new DateTimeZone($tz);
+                    $studDate->setTimeZone($timezone);
+                    $studDate = $studDate->getTimestamp();
+                     * /*
+                     */
+                    $CRITERION_OF_REPETITION = 10*60*60;//10 часов
+                    $today = time();
+                    $interval = $today-$studDate;
+
+                    if($interval > $CRITERION_OF_REPETITION && $row['stud'] == '2') 
+                        $row['stud'] == '1';
+                    if($row['stud'] == '1'){
+                        $word = new Word($row);
+                        $this->addWord($word);
+                    }
                     //var_dump($row);
-                    $word = new Word($row);
-                    $this->addWord($word);
+                    
                 }           
 
                /* $this->studListID = $strList;
@@ -73,8 +104,9 @@ class StudList{
              echo '---------------------<br>';*/
             //формируем массив id слов, которые надо будет повторить в следующий раз
             //Изначально это весь список для изучения
-            foreach ($this->studList as  $value) {
-                $this->repeteStudListID[$value->id] = $value->id;
+            $arrRepeteStudListID = explode(',', $strList);
+            foreach ($arrRepeteStudListID as  $id) {
+                $this->repeteStudListID[$id] = $id;
             }
              //var_dump($this->repeteStudListID);
             //echo '--------end constructor-------------<br>';
@@ -126,7 +158,26 @@ class StudList{
         $query = "SELECT studList FROM users WHERE id = $user_id;";
         $result = queryRun($query, "error in time reading table users");
         $strOldStudList = mysql_result($result,0,0);
-             
+        if($strOldStudList!=''){
+            $arrOldStudList  = explode(',', $strOldStudList );
+            $arrOldStudList1=array();
+            foreach ($arrOldStudList as  $value) {
+                $arrOldStudList1[$value]=$value;
+            }
+            $persontab = "u".$user_id;
+            $limitDate= date('Y-m-d H:i:s',time()-36000);
+            
+            $query = "SELECT id FROM `$persontab` WHERE id IN ($strOldStudList)  AND stud = '2' AND studDate > '$limitDate';";//как ни странно здесь нужен не <
+            $result = queryRun($query, "error in time read table $persontab query = $query " );
+
+
+            while ($row= mysql_fetch_assoc($result)){
+                unset($arrOldStudList1[$row['id']]);
+
+            }
+            $strOldStudList = implode(',', $arrOldStudList1);
+        }
+
         return $strOldStudList;
     }
     
@@ -166,15 +217,17 @@ class StudList{
         echo 'end studListID in delword<br>';*/
         
         //если слово находится в списке, то удаляем его
-        if (isset($this->studList[$word->foreign])){ 
+        if (isset($this->studList[$word->foreign]) ){ 
+            
             
             unset ($this->studList[$word->foreign]);
             
-            
+        }    
             /*/устанавливаем для каждого элемента массива значение равное его ключу             
             foreach ($this->studList as  $value) {
                 $studList[$value->id] = $value->id;
             }   */
+        if($word->stud == 0) unset ($this->repeteStudListID[$word->id]);
             if(sizeof($this->repeteStudListID)>0){
                 $strNewStudList = implode(',', $this->repeteStudListID);//строка содержащая id изучаемых слов разделенные запятыми
             }
@@ -200,9 +253,20 @@ class StudList{
                     . "WHERE `id`= $id;";
             //echo '<br>'.$query.'<br>';
             $result = queryRun($query, "Erroor  update $tableName table in time delete word from studList");
-        }
+        
 
     }
+    
+    /*
+    * Преобразует строку вида '2016-12-16 22:45:53'  в метку времени
+    */
+   function getTimestamp($strDate) {
+   //echo $strDate;
+       $dateAndTime = explode(' ', $strDate);
+       $dateArr = explode('-', $dateAndTime[0]);
+       $timeArr = explode(':', $dateAndTime[1]);
+       return mktime($timeArr[0], $timeArr[1], $timeArr[2], $dateArr[1], $dateArr[2], $dateArr[0]);
+   }
     
 
 }
@@ -574,7 +638,13 @@ class Word{
                 }
                 else{
                     $row = mysql_fetch_array($result);
-                    $this->lastData = $row['studDate'];
+                    
+                    $studDate = $row['studDate'];
+                    $query = "SELECT UNIX_TIMESTAMP('$studDate');";
+                    $result2 = queryRun($query, "ошибка при получении метки времени при выполнении запроса $query");
+                    $studDate = mysql_result($result2, 0);                    
+                    $this->lastData = $studDate;
+                    
                     $this->level = $row['level'];
                     $this->answers = $row['answers'];
                     $this->shows = $row['shows'];

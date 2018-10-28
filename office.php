@@ -10,9 +10,10 @@
     
     $CRITERION_OF_REPETITION = 10*60*60;//10 часов
          
-
+    $user_id = $_SESSION['user_id'];
         
     $content = '';
+    //$strStudList = StudList::getOldStudList($user_id);
     if (!isset($_SESSION['mode']) || $_SESSION['mode'] == 'mode') {
         $_SESSION['mode']='mode_read';
     }
@@ -34,11 +35,14 @@
         
         $_SESSION['mode'] = 'mode_stud';   
         //определяем количество слов в старом списке для изучения
+        /*
         $query = "SELECT `studList` FROM `users` WHERE `id` = $_SESSION[user_id];";
         $result = queryRun($query, "Error in time reading from 'users'<br> $query <br>");    
-        $strStudList = mysql_fetch_array($result);
-        if(strlen($strStudList['studList']) ){
-            $questionNumber = sizeof(explode(',',$strStudList['studList']));
+         * 
+         */
+        $strStudList = StudList::getOldStudList($user_id);
+        if(strlen($strStudList) ){
+            $questionNumber = sizeof(explode(',',$strStudList));
 
            
         }
@@ -93,7 +97,7 @@ var_dump($dictionary);echo '<br>';*/
         if (isset($_POST['btn_reset_text'])  && ($_POST['text_area'] != '')){
             $table_name = 'u'.$_SESSION['user_id'];
             //var_dump($dictionary);
-            $user_id = $_SESSION['user_id'];
+            
             $strStud = StudList::getOldStudList($user_id);
             $arrStudListId = explode(',', $strStud);
             
@@ -101,8 +105,8 @@ var_dump($dictionary);echo '<br>';*/
             foreach ($dictionary->wordsList as $word) {
                 //частота слова в тексте                
                 $frequency=$dictionary->wordFrequencyMap[htmlentities($word->foreign)];
-               $interval = time() - getTimestamp($word->lastData) ;
-               echo $interval;
+               $interval = time() - $word->lastData ;
+               //echo $interval;
                 //если пользователь не смотрел перевод слова, считается что он его знает
                 if($word->stud ==0 ||( $word->stud == 1 && ($interval > $CRITERION_OF_REPETITION))){
                     
@@ -241,6 +245,8 @@ var_dump($dictionary);echo '<br>';*/
             else{
                 $studList = new StudList($_POST['newQuestions']); 
                 //$button = 'btn_start_stud';
+                $f=fopen('log.txt', 'a');
+                //fwrite($f, var_dump($studList));
             }
             
 
@@ -286,7 +292,7 @@ var_dump($dictionary);echo '<br>';*/
         //if(isset($studList)) $content .= var_dump($studList);
         }
         else{// если список для изучения пуст
-            if(strlen($strStudList['studList'])==0){//но при этом в таблице users за пользователем закреплен непустой список
+            if(!isset($strStudList) || strlen($strStudList)==0 ){//но при этом в таблице users за пользователем закреплен непустой список
                 /*
                  * не понятно, как такая ситуация вообще может возникать?
                  * Если в таблице users за пользователем закреплен непустой список, то список должен быть не пустым.
@@ -300,6 +306,7 @@ var_dump($dictionary);echo '<br>';*/
                 unset($_POST['btn_right']);
             }
             else{
+                if (isset($questionNumberMsg))
                 $content .= $questionNumberMsg;
             }
 
@@ -388,24 +395,29 @@ function testing($studList, $button){
             //---------------------------------------------   
             case 'btn_right'://нажата кнопка "Правильно"   |
             //---------------------------------------------
+            
+
+
                 //определяем временню метку текущего слова
                 $dateСurrentWord = $currentWord->lastData;
                 //определяем  временню метку слова
-                $currentWordTimestamp = getTimestamp($dateСurrentWord);
-                                
+                //$currentWordTimestamp = getTimestamp($dateСurrentWord);
+
+
+
                 $CRITERION_OF_REPETITION = 10*60*60;//10 часов
          
                 //определяем текущую дату
                 $today =  time();
-                
+               $interval = $today-$dateСurrentWord;
                 
                 //если дата не сегодняшняя
-                if($today - $currentWordTimestamp > $CRITERION_OF_REPETITION){
+                if($interval > $CRITERION_OF_REPETITION){
                     //удаляем слово из списка для изучения в БД
                     $currentWord->stud = 0;
                     //echo sizeof($studList->studList).'-------<br>';
                     //Усстанавливаем текущую дату в свойство объекта-слово
-                    $currentWord->lastData = date("Y-m-d H:i:s",  time());
+                    $currentWord->lastData =  time();
                     //var_dump($studList);
                     unset($studList->repeteStudListID[$currentWord->id]);
                     
@@ -459,7 +471,7 @@ function testing($studList, $button){
                 if(!isset($_SESSION['currentWord'])) $currentWord = $studList->studList[$_SESSION['currentWord']];
                 //если дата не сегодняшняя                
                 //Устанавливаем текущую дату в свойство объекта-слово
-                $currentWord->lastData = date("Y-m-d H:i:s",  time());
+                $currentWord->lastData =  time();
                 //Увеличиваем на 1 свойство shows
                 $currentWord->shows++;
                 
