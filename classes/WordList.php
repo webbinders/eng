@@ -42,8 +42,28 @@ class StudList{
         else{//значит пустая новая составляющая
             $strList = $strOldStudList;
         }
+        
+            //формируем массив id слов, которые надо будет повторить в следующий раз
+            //Изначально это весь список для изучения
+            //
+            if ($strNewStudList){
+                $strRepeteStudListID = StudList::getOldRepeteStudListID($user_id);
+            }
+            else{
+                
+                $strRepeteStudListID = StudList::getOldRepeteStudListID($user_id).','.$strNewStudList;
+            }
+            $arrRepeteStudListID = explode(',', $strRepeteStudListID);
+            foreach ($arrRepeteStudListID as  $id) {
+                $this->repeteStudListID[$id] = $id;
+            }
+           // echo 'constructor ';
+             //var_dump($this->repeteStudListID);
+             
+        
         if($strList !=''){
-            $query = "UPDATE users SET `studList` = '$strList' WHERE id = $user_id;";
+
+            $query = "UPDATE users SET `studList` = '$strRepeteStudListID' WHERE id = $user_id;";
 
             $result = queryRun($query, "ошибка при обновлении списка для изучения (таблица users");
 
@@ -102,17 +122,13 @@ class StudList{
             
              var_dump($this->studList);
              echo '---------------------<br>';*/
-            //формируем массив id слов, которые надо будет повторить в следующий раз
-            //Изначально это весь список для изучения
-            $arrRepeteStudListID = explode(',', $strList);
-            foreach ($arrRepeteStudListID as  $id) {
-                $this->repeteStudListID[$id] = $id;
-            }
-             //var_dump($this->repeteStudListID);
+           
             //echo '--------end constructor-------------<br>';
         }
        
     }
+
+            
     function getNewStudList($user_id, $count){
         $strNewStudList = '';
         $remainingWords = $count;
@@ -129,7 +145,8 @@ class StudList{
             if (mysql_num_rows($result)){
                 //создаем элементы массива с id полученных записей в качестве ключа
                 while ($word = mysql_fetch_assoc($result)){
-                    $studList[$word['id']] = $word['id'];   
+                    $studList[$word['id']] = $word['id']; 
+                    $this->repeteStudListID[$word['id']]=$word['id'];
                 } 
                 /*/устанавливаем для каждого элемента массива значение равное его ключу 
                 foreach ($studList as $key => $value) {
@@ -151,13 +168,26 @@ class StudList{
         return $strNewStudList;
     }
     /*
-     * Возвращает массив id слов, которые на данный момент находятся в списке для изучения
-     * Список id слов у которых stud = 1 дублируется в таблице users в виде строки содержащей id разделенные запятыми 
+     * Возвращает список id слов, которые на данный момент находится в списке для изучения и повторения
+     * Т.е. те у которых stud = 1 или 2 в личной таблице пользователя. Этот список должен отображаться в таблице users
      */
-    static function getOldStudList($user_id){
+    function getRepeteStudListID($user_id){
+        return $this->repeteStudListID;
+    }
+    static function getOldRepeteStudListID($user_id){
         $query = "SELECT studList FROM users WHERE id = $user_id;";
         $result = queryRun($query, "error in time reading table users");
         $strOldStudList = mysql_result($result,0,0);
+       // echo 'getOldRepeteStudListID '.$strOldStudList.'<br>';
+        return $strOldStudList;
+    }
+    /*
+     * Возвращает массив id слов, которые на данный момент находятся в списке для изучения
+     * Список id слов у которых stud = 1. Дублируется в таблице users в виде строки содержащей id разделенные запятыми 
+     */
+    static function getOldStudList($user_id){
+        
+        $strOldStudList = StudList::getOldRepeteStudListID($user_id);
         if($strOldStudList!=''){
             $arrOldStudList  = explode(',', $strOldStudList );
             $arrOldStudList1=array();
@@ -165,18 +195,25 @@ class StudList{
                 $arrOldStudList1[$value]=$value;
             }
             $persontab = "u".$user_id;
-            $limitDate= date('Y-m-d H:i:s',time()-36000);
+            $now = time();
+            $limitDate= date('Y-m-d H:i:s', $now-36000);
+            $now=date('Y-m-d H:i:s', $now);
             
-            $query = "SELECT id FROM `$persontab` WHERE id IN ($strOldStudList)  AND stud = '2' AND studDate > '$limitDate';";//как ни странно здесь нужен не <
+            $query = "SELECT id FROM `$persontab` WHERE id IN ($strOldStudList)  AND stud = '2' AND studDate  > '$limitDate';
+;";//как ни странно здесь нужен не <
             $result = queryRun($query, "error in time read table $persontab query = $query " );
 
 
             while ($row= mysql_fetch_assoc($result)){
                 unset($arrOldStudList1[$row['id']]);
+               
 
             }
             $strOldStudList = implode(',', $arrOldStudList1);
         }
+        
+        //echo 'getOldStudList<br>';
+        //echo $strOldStudList;
 
         return $strOldStudList;
     }
@@ -222,7 +259,8 @@ class StudList{
             
             unset ($this->studList[$word->foreign]);
             
-        }    
+        }   
+   
             /*/устанавливаем для каждого элемента массива значение равное его ключу             
             foreach ($this->studList as  $value) {
                 $studList[$value->id] = $value->id;
@@ -234,7 +272,8 @@ class StudList{
             else{
                 $strNewStudList = '';
             }
-            
+            //echo 'delWord var_dump($this->repeteStudListID);<br>';
+            //var_dump($this->repeteStudListID);
             //перезаписываем $strNewStudList в таблицу пользователей для текущего пльзователя
             
             $user_id = $_SESSION['user_id'];
