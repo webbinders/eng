@@ -481,7 +481,8 @@ function testing($studList, $button){
                 
                 //Обновляем запись для слова в БД
                 //Личная таблица
-                
+                if ($currentWord->answers == '') $currentWord->answers = 0;
+                if ($currentWord->stud == '') $currentWord->stud = 1;
                 $tableName = 'u'.$_SESSION['user_id'];
                 $query = "UPDATE $tableName SET "
                         . "`answers`=$currentWord->answers,"
@@ -491,13 +492,13 @@ function testing($studList, $button){
                         . "`stud`=$currentWord->stud "
                         . "WHERE `id`=$currentWord->id;";
                 
-                $result = queryRun($query,'Error in time update '.$tableName);
+                $result = queryRun($query,'Error in time update '.$tableName .' query = '.$query);
                 //тезарус
                 $foreign = addslashes($currentWord->foreign);
                 $native = addslashes($currentWord->native);
                 $query = "UPDATE `thesaurus` SET `foreign`='$foreign',`native`='$native' WHERE `id`=$currentWord->id";
                 //echo $query;
-                $result = queryRun($query,'Error in time update thesaurus');
+                $result = queryRun($query,'Error in time update thesaurus query = '.$query);
                 
 /*echo 'previos<br>';
                 $prevWord = prev($studList->studList);
