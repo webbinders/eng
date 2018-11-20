@@ -46,7 +46,7 @@ class StudList{
             //формируем массив id слов, которые надо будет повторить в следующий раз
             //Изначально это весь список для изучения
             //
-            if ($strNewStudList){
+            if ($strNewStudList==''){
                 $strRepeteStudListID = StudList::getOldRepeteStudListID($user_id);
             }
             else{
@@ -199,8 +199,7 @@ class StudList{
             $limitDate= date('Y-m-d H:i:s', $now-36000);
             $now=date('Y-m-d H:i:s', $now);
             
-            $query = "SELECT id FROM `$persontab` WHERE id IN ($strOldStudList)  AND stud = '2' AND studDate  > '$limitDate';
-;";//как ни странно здесь нужен не <
+            $query = "SELECT id FROM `$persontab` WHERE id IN ($strOldStudList)  AND stud = '2' AND studDate  > '$limitDate';";//как ни странно здесь нужен не <
             $result = queryRun($query, "error in time read table $persontab query = $query " );
 
 
@@ -513,8 +512,9 @@ class Word{
             //Для каждого элемента массива содержащего id  примеров
             foreach ($arrId as $valueId) {
                 //Создаем объект exampleObj класса Word
-                $property_arr['id'] = $valueId;
+                $property_arr['id'] = $valueId; 
                 $exampleObj = new Word($property_arr);
+                if ($exampleObj->foreign)//если слово с таким id  существует
                 //Добавить его в список примеров
                 $exampleList[$valueId]=$exampleObj;
             }
@@ -556,6 +556,16 @@ class Word{
     function findExamples(){
         
         $exampleList = $this->buildArrWords($this->findExamplesId($this)); 
+        //обновляем список примеров данного слова в БД
+        $arr=array();
+              
+        foreach ($exampleList as  $example) {
+            $arr[] = $example->id;
+        }
+           $strExampleList = implode(',', $arr);
+       
+        $query = "UPDATE `thesaurus` SET `examples`= '$strExampleList' WHERE id = $this->id";
+        $result = queryRun($query, "Ошибка обновления таблицы 'thesaurus' во время выполнения метода ");
         return $exampleList;
     }
     
@@ -647,48 +657,49 @@ class Word{
                 $result = queryRun($query,'Ошибка соединения в конструкторе класса Word'); 
 
                 //если запись не найдена сообщаем о проблеме
-                if (mysql_num_rows($result) == 0){
-                    //echo 'error';
-                    die(' id is empty :'.$id . mysql_error());
-                }
+                if (mysql_num_rows($result) > 0){
+                        //echo 'error';
+                       // die(' id is empty :'.$id . mysql_error());
 
-                $row = mysql_fetch_array($result);
-                //в соответствии с переданными параметрами устанавливаем свойства слова
-                $this->foreign = $row['foreign'];
-                $this->frequency = $row['frequency'];
-                $this->examples = $row['examples'];
 
-                if (isset($property_arr['native'])){
-                    $this->native = $row['native'].'\n'.$property_arr['native'];
-                }
-                else {
-                    $this->native = $row['native'];                
-                }
-            
-            }
-            if(isset($_SESSION['user_id'])){
-                //создаем запрос на считывание свойств слова из личной таблицы
-                $query = "SELECT * FROM $table_name  WHERE id = '$id'";
-                $result = queryRun($query,"Ошибка соединения в конструкторе класса Word при стении из таблицы $table_name");  
-                //если слова еще нет в личной таблице
-                if (mysql_num_rows($result) == 0){
-                    //добавляем слово в личную таблицу с установкой свойств объекта-слово по умолчанию
-                    $this->addToPersonTab($id, $table_name);
-                }
-                else{
                     $row = mysql_fetch_array($result);
-                    
-                    $studDate = $row['studDate'];
-                    $query = "SELECT UNIX_TIMESTAMP('$studDate');";
-                    $result2 = queryRun($query, "ошибка при получении метки времени при выполнении запроса $query");
-                    $studDate = mysql_result($result2, 0);                    
-                    $this->lastData = $studDate;
-                    
-                    $this->level = $row['level'];
-                    $this->answers = $row['answers'];
-                    $this->shows = $row['shows'];
-                    //$this->examples = $row['examples'];
-                    $this->stud = $row['stud'];
+                    //в соответствии с переданными параметрами устанавливаем свойства слова
+                    $this->foreign = $row['foreign'];
+                    $this->frequency = $row['frequency'];
+                    $this->examples = $row['examples'];
+
+                    if (isset($property_arr['native'])){
+                        $this->native = $row['native'].'\n'.$property_arr['native'];
+                    }
+                    else {
+                        $this->native = $row['native'];                
+                    }
+
+                }
+                    if(isset($_SESSION['user_id'])){
+                    //создаем запрос на считывание свойств слова из личной таблицы
+                    $query = "SELECT * FROM $table_name  WHERE id = '$id'";
+                    $result = queryRun($query,"Ошибка соединения в конструкторе класса Word при стении из таблицы $table_name");  
+                    //если слова еще нет в личной таблице
+                    if (mysql_num_rows($result) == 0){
+                        //добавляем слово в личную таблицу с установкой свойств объекта-слово по умолчанию
+                        $this->addToPersonTab($id, $table_name);
+                    }
+                    else{
+                        $row = mysql_fetch_array($result);
+
+                        $studDate = $row['studDate'];
+                        $query = "SELECT UNIX_TIMESTAMP('$studDate');";
+                        $result2 = queryRun($query, "ошибка при получении метки времени при выполнении запроса $query");
+                        $studDate = mysql_result($result2, 0);                    
+                        $this->lastData = $studDate;
+
+                        $this->level = $row['level'];
+                        $this->answers = $row['answers'];
+                        $this->shows = $row['shows'];
+                        //$this->examples = $row['examples'];
+                        $this->stud = $row['stud'];
+                    }
                 }
             }
 
