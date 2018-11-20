@@ -558,11 +558,16 @@ class Word{
         $exampleList = $this->buildArrWords($this->findExamplesId($this)); 
         //обновляем список примеров данного слова в БД
         $arr=array();
-              
-        foreach ($exampleList as  $example) {
+        if (sizeof($exampleList))  {
+            foreach ($exampleList as  $example) {
             $arr[] = $example->id;
         }
            $strExampleList = implode(',', $arr);
+        }  
+        else{
+            $strExampleList='';
+        }
+        
        
         $query = "UPDATE `thesaurus` SET `examples`= '$strExampleList' WHERE id = $this->id";
         $result = queryRun($query, "Ошибка обновления таблицы 'thesaurus' во время выполнения метода ");
