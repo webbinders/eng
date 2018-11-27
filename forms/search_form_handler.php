@@ -108,11 +108,11 @@ function buildQueryForForeign($arrParam, $order) {
     if ($order){
         foreach ($arrParam as $key => $value) {
             if($value['asPart_chb']){
-                $arrLike[] = '.*'.$value['foreign_box'].'.*';
+                $arrLike[] = '.*'.addslashes($value['foreign_box']).'.*';
             }
             else{
                 if(strlen($value['foreign_box'])>0){
-                    $arrLike[] ='.*' . "[[:<:]]".$value['foreign_box']."[[:>:]]";
+                    $arrLike[] ='.*' . "[[:<:]]".addslashes($value['foreign_box'])."[[:>:]]";
                 }
                 else{
                     $arrLike[] = "";
@@ -125,10 +125,10 @@ function buildQueryForForeign($arrParam, $order) {
         //если не надо соблюдать последовательность
         foreach ($arrParam as $key => $value){
             if($value['asPart_chb']){
-                $arrLike[] ="LIKE '%{$value['foreign_box']}%'";
+                $arrLike[] ="LIKE '%".addslashes($value['foreign_box'])."%'";
             }else{
                 if(strlen($value['foreign_box'])>0){
-                    $arrLike[] ="RLIKE '[[:<:]]".$value['foreign_box']."[[:>:]]'";
+                    $arrLike[] ="RLIKE '[[:<:]]".addslashes($value['foreign_box'])."[[:>:]]'";
                 }
                 else{
                     $arrLike[] = "LIKE '%%'";
