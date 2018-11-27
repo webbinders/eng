@@ -153,7 +153,7 @@ class TextElement extends HtmlFormElement{
             $req='';
         $this->htmlString=
                 "<p class='$this->class'>".$this->label.
-                   " <input class='$this->class' name='$this->name' size='$this->size' value='$this->value' type='$this->type' $req></p>";
+                   " <input class='$this->class' name='$this->name' size='$this->size' value=".'"'.$this->value.'"'." type='$this->type' $req></p>";
         }           
        
                                                                 
