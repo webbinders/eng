@@ -33,24 +33,27 @@
     if (isset($_POST['btn_stud']) || isset($_POST['btn_start_stud'])){
        
         
-        $_SESSION['mode'] = 'mode_stud';   
-        //определяем количество слов в старом списке для изучения
-        /*
-        $query = "SELECT `studList` FROM `users` WHERE `id` = $_SESSION[user_id];";
-        $result = queryRun($query, "Error in time reading from 'users'<br> $query <br>");    
-         * 
-         */
-        $strStudList = StudList::getOldStudList($user_id);
-        if(strlen($strStudList) ){
-            $questionNumber = sizeof(explode(',',$strStudList));
+        $_SESSION['mode'] = 'mode_stud';  
+        if(!isset($studList) || !isset($_SESSION['studList'])){
+            //определяем количество слов в старом списке для изучения
+            /*
+            $query = "SELECT `studList` FROM `users` WHERE `id` = $_SESSION[user_id];";
+            $result = queryRun($query, "Error in time reading from 'users'<br> $query <br>");    
+             * 
+             */
+            $strStudList = StudList::getOldStudList($user_id);
+            if(strlen($strStudList) ){
+                $questionNumber = sizeof(explode(',',$strStudList));
 
-           
+
+            }
+            else{
+                $questionNumber =0;
+            }
+             $questionNumberMsg = "Уже в списке для изучения на сегодня имеется слов : $questionNumber <br>"
+                        . "Добавьте к ним некоторое количество новых вопросов<br>";            
         }
-        else{
-            $questionNumber =0;
-        }
-         $questionNumberMsg = "Уже в списке для изучения на сегодня имеется слов : $questionNumber <br>"
-                    . "Добавьте к ним некоторое количество новых вопросов<br>";
+
 
         
         
@@ -66,7 +69,12 @@ switch ($_SESSION['mode']) {
         //если нажата кнопка "Найти"
         
         //если нажата кнопка "Поиск", т.е. только вошли в режим, удаляем результаты прошлого поиска
-        if(isset($_POST['btn_search'])) unset($_SESSION['find']);
+        if(isset($_POST['btn_search'])){
+            unset($_SESSION['find']);
+            if(isset($_SESSION['studList'])){
+                $studList = unserialize($_SESSION['studList']);
+            }
+        }
         //include_once 'forms/search_form_handler.php';
         include_once  'forms/search_form.php';
         $content .= $my_form ->toString();
@@ -227,6 +235,11 @@ var_dump($dictionary);echo '<br>';*/
     case 'mode_stud':
     //---------------------
         $button = "non_button";
+        if(isset($_POST['btn_stud'])){
+             if (isset($_SESSION['studList'])){
+                    $studList =  unserialize($_SESSION['studList']);
+                }
+        }
         if(isset($_POST['btn_start_stud'])){
             //если нажата кнопка начать изучение
             //загружаем список для изучения
@@ -262,6 +275,7 @@ var_dump($dictionary);echo '<br>';*/
                 }
             
             }
+            
         }
         if(isset($_POST['btn_ready'])){//если нажата кнопка "Готово"
             //

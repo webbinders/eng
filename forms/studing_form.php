@@ -16,7 +16,9 @@ if (isset($_POST['btn_start_stud']) ||
         isset($_POST['btn_wrong']) ||
         isset($_POST['btn_right']) ||
         isset($_POST['btn_view_example']) ||
-        isset($_POST['btn_show_native'])) {
+        isset($_POST['btn_show_native']) ||
+        isset($_POST['btn_stud']) && isset($_SESSION['studList'])
+        ) {
 
     //если нажата кнопка начать изучение
     //создаем текстовую область "Вопрос"
