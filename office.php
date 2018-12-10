@@ -65,7 +65,9 @@
     
    
 switch ($_SESSION['mode']) {
+    //------------------
     case 'mode_search':
+    //------------------
         //если нажата кнопка "Найти"
         
         //если нажата кнопка "Поиск", т.е. только вошли в режим, удаляем результаты прошлого поиска
@@ -90,7 +92,7 @@ echo'<br> --- dictionary---<br>';
 var_dump($dictionary);echo '<br>';*/
         }
 
-
+        if(isset($_POST['text_area']) && $_POST['text_area'] != '') $_SESSION['text_area'] = $_POST['text_area'];
         
         //нажата кнопка обработать текст
         if (isset($_POST['btn_handling_text']) && ($_POST['text_area'] != '')){
@@ -144,6 +146,7 @@ var_dump($dictionary);echo '<br>';*/
             
             $_POST['text_area'] = '';
             unset($_SESSION['dictionary']);
+            unset($_SESSION['text_area']);
             //var_dump($dictionary);
         }
         
@@ -257,8 +260,9 @@ var_dump($dictionary);echo '<br>';*/
             }
             else{
                 $studList = new StudList($_POST['newQuestions']); 
+                $_SESSION['studList'] = serialize($studList);
                 //$button = 'btn_start_stud';
-                $f=fopen('log.txt', 'a');
+                //$f=fopen('log.txt', 'a');
                 //fwrite($f, var_dump($studList));
             }
             
@@ -266,15 +270,8 @@ var_dump($dictionary);echo '<br>';*/
             //
         }
         else{
-            if (!isset($_POST['btn_stud'])){
-                if (isset($_SESSION['studList'])){
+            if (isset($_SESSION['studList']))
                     $studList =  unserialize($_SESSION['studList']);
-                }
-                else{
-                    $studList = new StudList(0);
-                }
-            
-            }
             
         }
         if(isset($_POST['btn_ready'])){//если нажата кнопка "Готово"
@@ -475,6 +472,8 @@ function testing($studList, $button){
                 else{
                     
                     $_SESSION['mode'] = 'mode_end_stud';
+                    unset($studList);
+                    unset($_SESSION['studList']);
                 }
 
                 break;
@@ -624,7 +623,7 @@ function testing($studList, $button){
                 break;
         }
         //Передаем список для изучения как переменную сессии
-        $_SESSION['studList'] = serialize($studList);
+        if(isset($_SESSION['studList'])) $_SESSION['studList'] = serialize($studList);
         
         
        
