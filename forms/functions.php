@@ -54,7 +54,7 @@
         $btnId = key($_POST['btn_show_native']);
         if (isset($_POST['shown'])) $shownExample = unserialize ($_POST['shown']);
         //запоминаем нажатую кнопку в массиве
-        $shownExample[] = $btnId;
+        $shownExample[$btnId] = $btnId;
         //print_r($shownExample);
         
         //Для каждого элемента списка примеров
@@ -77,6 +77,7 @@
                     'type' => 'button',
                 ));
                 $form->addInputForm($btn_show_native);
+                $studList->addWord($value);
             } else {
                 //создаем параграф содержащий перевод
                 $p_native = new pElement(array(
