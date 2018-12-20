@@ -323,7 +323,7 @@ class WordList{
      function  __construct($text){
          
         //разбиваем текст на слова и помещаем их в массив-карту частот
-        $word_map = $this->splitText($text);
+        $word_map = $this->buildFrequencyMap($text);
         
         $this->wordFrequencyMap = $word_map;
 
@@ -372,14 +372,10 @@ class WordList{
         
      }
      
-
-
-
     /*
-     * Разбивает текст на слова и подсчитывает частоту слов в тексте
-     * Возвращает массив $word_map[$word]=$frequency
+     * Разбивает текст на слова и помещает их в массив   
      */
-    function splitText($text){
+    static function splitText($text){
         //заменяем альтернативные апострофы на правильный
         $text=preg_replace('/\’/','\'',$text);
         
@@ -393,6 +389,16 @@ class WordList{
          //разбиваем текст на слова и помещаем их в массив $words_arr
         $text=preg_replace('/(^\s*\')|(\s\')|(\'\W)|(\'\s)|\d+|[^(\w\’\')]|(\'*$)|[^\'\w]/',',',$text);
         $words_arr = explode(',',$text);
+        return $words_arr;
+    }
+
+    /*
+     * Разбивает текст на слова и подсчитывает частоту слов в тексте
+     * Возвращает массив $word_map[$word]=$frequency
+     */
+    function buildFrequencyMap($text){
+        
+        $words_arr = $this->splitText($text);
         
         //для каждого слова подсчитывем его частоту в тексте
         //т.е. создаем массив $word_map[$word]=частота
@@ -501,6 +507,14 @@ class Word{
     function setNative($string){$this->native = $string;}
     function setFrequency($var){$this->frequency = $var;}
     
+    /*
+     * Функция удаления слова из БД
+     */
+     function delWord(){
+        //из слов фразы создаем массив слов (объект-слово может представлять собой фразу из нескольких слов)
+        $arrWords = WordList::splitText($this);
+        print_r($arrWords);
+    }
    
     /*
      * Функция создания массива объектов-слов в соответствии с переданным массивом id слов
