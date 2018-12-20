@@ -131,7 +131,7 @@ $my_form->addInputForm($btnFind);
 //если существует список результатов поиска (примеров)
 if(isset($_SESSION['find'])){
     $arrWords = unserialize($_SESSION['find']);
-    unset($_SESSION['find']);
+    //unset($_SESSION['find']);
     if(sizeof($arrWords)){
         foreach ($arrWords as $word){
         $div_found_box = new divElement(array(
@@ -161,7 +161,7 @@ if(isset($_SESSION['find'])){
             $div_found_box ->addChild($btnAdd);
         }
         
-        if($_SESSION['login']."@ukr.net" == "gal_sergey@ukr.net"){
+        if (isset($_SERVER['PHP_AUTH_USER'])){
             $btnDel = new ButtonElement(array(
                 'type'=>'submit',
                 'name'=> 'btnDel'."[{$word->id}]",
