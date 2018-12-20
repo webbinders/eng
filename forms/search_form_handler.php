@@ -8,6 +8,7 @@ if(isset($_POST['btnFind'])){
         //$strFindHTML = arrayToHTML($arrWords);
         $_SESSION['find'] = serialize($arrWords);
     }
+    //print_r($_SESSION['find']);
 }
 //если нажата кнопка "Добавить в список для изучения"
 if(isset($_POST['btnAdd'])){
@@ -19,6 +20,34 @@ if(isset($_POST['btnAdd'])){
     
     $arrWords[$btnId]->addToStudList();
     $_SESSION['find'] = serialize($arrWords);
+}
+//если нажата кнопка "Удалить"
+if(isset($_POST['btnDel'])){
+    $wordId = key($_POST['btnDel']);
+    //echo $wordId.'<br>----------------------<br>';
+    if(isset($_SESSION['find'])){
+        $arrWords = unserialize ($_SESSION['find']);
+        $_content='Запустить процедуру удаления єлемента - '.$wordId;
+        print_r($arrWords[$wordId]);
+        $arrWords[$wordId]->delWord();
+    }
+    //print_r($_SESSION['find']);
+    //echo '<br>----------------------<br>';
+    $_content='Запустить процедуру удаления єлемента - '.$wordId;
+    
+        
+    
+}
+/*
+ * Процедура удаления слова
+ */
+function delWord($word){
+    echo 'delWord($word)<br>';
+    $word->delWord();
+    print_r($word);
+    //удаляем слово из БД
+    $word->delWord();
+    //удаляем слово из массива $_SESSION['find']
 }
 /*
  * Проверяет заполнение полей foreign формы
