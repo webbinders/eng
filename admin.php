@@ -7,7 +7,7 @@ if(md5($_SERVER['PHP_AUTH_PW'])==="6cf32f4cca135e47a01d8e706bd17f8f" and md5($_S
     include_once 'server_connect.php'; //соединяемся с сервером БД
     include './classes/WordList.php';
     
-    $_SESSION['access']=1;
+    //$_SESSION['access']=1;
     $_content='';
     if(isset($_POST['btnFind'])){
         include './forms/search_form.php';
@@ -25,7 +25,7 @@ if(md5($_SERVER['PHP_AUTH_PW'])==="6cf32f4cca135e47a01d8e706bd17f8f" and md5($_S
     
     if(isset($_POST['btnDel'])){
         include './forms/search_form.php';
-          $_content='Запустить процедуру удаления єлемента - '.$wordId;
+          //$_content='Запустить процедуру удаления єлемента - '.$wordId;
           $_content .= $my_form->toString();
     }
      
