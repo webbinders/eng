@@ -511,9 +511,58 @@ class Word{
      * Функция удаления слова из БД
      */
      function delWord(){
+          //$table_name = 'u'.$_SESSION['user_id'];
         //из слов фразы создаем массив слов (объект-слово может представлять собой фразу из нескольких слов)
-        $arrWords = WordList::splitText($this);
+        $arrWords = WordList::splitText($this->foreign);
+        /*
+        echo '+++++++<br>';
         print_r($arrWords);
+        echo '+++++++<br>';
+         * 
+         */
+        if(sizeof($arrWords)){
+            //для каждого слова фразы
+            foreach ($arrWords as $word) {
+                /*
+                echo '-----<br>';
+                echo $word;             
+                echo '-----<br>';
+                */
+                //$id = $value->id;
+                //находим его в БД
+                $query = "SELECT * FROM thesaurus WHERE `foreign`  = '$word';";
+                $result = queryRun($query, "Error in procedure delWord <br> query = $query");
+                $row = mysql_fetch_array($result);
+                //var_dump($row);
+                $arr_id_examples = explode(',', $row['examples']);
+                print_r($arr_id_examples);
+                foreach ($arr_id_examples as $key => $id_example) {
+                    //если в слове фразы есть id примера самой фразы
+                    if($id_example == $row['id']){
+                        unset($arr_id_examples[$key]);
+                        // опять делаем из массива строку для записи в БД
+                        $strExampleList = implode(',', $arr_id_examples);
+                        //перезаписываем примеры для слова фразы
+                        $id = $row['id'];
+                        if (strlen($strExampleList)){
+                            $query = "UPDATE `thesaurus` SET `examples`= '$strExampleList' WHERE id = $id";
+                            $result = queryRun($query, "Error in procedure delWord <br> query = $query");
+                        }
+                        
+                        break;
+                    }
+                }
+               
+               // echo '\\\\\\\\\\\\<br>';
+                //$query = "SELECT * FROM thesaurus WHERE `id`  = '$value';";
+                //echo $this->id;
+            }
+            $id = $this->id;
+            $query = "DELETE  FROM `thesaurus` WHERE id = '$id';";
+            $result = queryRun($query, "Error in procedure delWord <br> query = $query");
+        }
+        return TRUE;
+        
     }
    
     /*
@@ -651,10 +700,10 @@ class Word{
        
     }
             
-    function  __construct($property_arr){
+    function __construct($property_arr){
         
         //var_dump($property_arr);
-        $table_name = 'u'.$_SESSION['user_id'];
+        
         
         //Добавляем слово в тезарус, если его там еще нет
         if (isset($property_arr['id'])){
@@ -670,7 +719,7 @@ class Word{
                 //то выборку свойств проводим по id
                 //составляем запрос на поиск слова тезарусе по id
                 $query = "SELECT * FROM thesaurus  WHERE id = '$id'";
-                //$query = "SELECT thesaurus.*, $table_name.*  FROM thesaurus, $table_name WHERE thesaurus.id = '$id' AND $table_name.id ='$id';";
+                
                 //echo $query;
                 //Выполняем запрос
                 $result = queryRun($query,'Ошибка соединения в конструкторе класса Word'); 
@@ -695,7 +744,9 @@ class Word{
                     }
 
                 }
-                    if(isset($_SESSION['user_id'])){
+                if(isset($_SESSION['user_id'])){
+                    //определяем имя личной таблицы пользователя
+                    $table_name = 'u'.$_SESSION['user_id'];
                     //создаем запрос на считывание свойств слова из личной таблицы
                     $query = "SELECT * FROM $table_name  WHERE id = '$id'";
                     $result = queryRun($query,"Ошибка соединения в конструкторе класса Word при стении из таблицы $table_name");  
