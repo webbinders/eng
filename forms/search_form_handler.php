@@ -12,28 +12,33 @@ if(isset($_POST['btnFind'])){
 }
 //если нажата кнопка "Добавить в список для изучения"
 if(isset($_POST['btnAdd'])){
-    //определяем id нажатой кнопки
-    $btnId = key($_POST['btnAdd']);
+    
+    //$btnId = key($_POST['btnAdd']);
     
     $arrWords = unserialize($_SESSION['find']);
     //var_dump($arrWords);
     
-    $arrWords[$btnId]->addToStudList();
+    //$arrWords[$btnId]->addToStudList();
     $_SESSION['find'] = serialize($arrWords);
 }
 //если нажата кнопка "Удалить"
 if(isset($_POST['btnDel'])){
+    //определяем id нажатой кнопки
     $wordId = key($_POST['btnDel']);
     //echo $wordId.'<br>----------------------<br>';
     if(isset($_SESSION['find'])){
         $arrWords = unserialize ($_SESSION['find']);
-        $_content='Запустить процедуру удаления єлемента - '.$wordId;
-        print_r($arrWords[$wordId]);
-        $arrWords[$wordId]->delWord();
+        //$_content='Запустить процедуру удаления элемента - '.$wordId;
+        //print_r($arrWords[$wordId]);
+        if($arrWords[$wordId]->delWord()){
+            $_content="Запись $wordId успешно удалена";
+            unset($_SESSION['find']);
+        }
+        
     }
     //print_r($_SESSION['find']);
     //echo '<br>----------------------<br>';
-    $_content='Запустить процедуру удаления єлемента - '.$wordId;
+    //$_content='Запустить процедуру удаления єлемента - '.$wordId;
     
         
     

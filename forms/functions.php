@@ -49,6 +49,8 @@
  function dysplay_example($form){
 //получаем из переменной список примеров
         $exampleList = unserialize($_SESSION['exampleList']);
+         if (isset($_SESSION['studList']))
+                    $studList =  unserialize($_SESSION['studList']);
        //var_dump($exampleList);
         //определяем нажатую кнопку
         $btnId = key($_POST['btn_show_native']);
@@ -77,7 +79,13 @@
                     'type' => 'button',
                 ));
                 $form->addInputForm($btn_show_native);
-                $studList->addWord($value);
+                if (isset($studList)){
+                    $studList->addWord($value);
+                }
+                else{
+                    $value->addToStudList();
+                }
+                
             } else {
                 //создаем параграф содержащий перевод
                 $p_native = new pElement(array(
