@@ -79,12 +79,7 @@
                     'type' => 'button',
                 ));
                 $form->addInputForm($btn_show_native);
-                if (isset($studList)){
-                    $studList->addWord($value);
-                }
-                else{
-                    $value->addToStudList();
-                }
+
                 
             } else {
                 //создаем параграф содержащий перевод
@@ -94,6 +89,12 @@
                     'class' => 'native',
                 ));
                 $form->addInputForm($p_native);
+                if (isset($studList)){
+                    $studList->addWord($value);
+                }
+                else{
+                    $value->addToStudList();
+                }
             }
         }
         $serShownExample=serialize($shownExample);
