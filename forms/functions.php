@@ -104,4 +104,5 @@
         ));
         $form->addInputForm($shownArr);
         $_SESSION['exampleList'] = serialize($exampleList);
+        $_SESSION['studList'] = serialize($studList);
  }
