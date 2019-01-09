@@ -225,8 +225,9 @@ class StudList{
         //если слово не принадлежит списку слов
         if(!isset($studList[$word->foreign])){            
             $this->studList[$word->foreign] = $word;
+            $this->repeteStudListID[$word->id] = $word->id;
         }
-        
+        $word->addToStudList();        
     }
     /*
      * Перемещает слово в конец списка для изучения
@@ -666,7 +667,7 @@ class Word{
             $table_name = 'u'.$_SESSION['user_id'];
             $this->shows++;
             $level=$this->answers/$this->shows;
-            $this->stud =1;
+            $this->stud =2;
             //создать запрос для установки stud =1 в личной таблице
             $query = "UPDATE $table_name SET `shows`=$this->shows,`level`= $level,`studDate`= NOW(), `stud`= 1 WHERE `id` = $this->id;";
             $result = queryRun($query,"Ошибка обновления таблицы $table_name во время выполнения метода addToStudList()"); 
@@ -704,7 +705,10 @@ class Word{
         
         //var_dump($property_arr);
         
-        
+        if(isset($_SESSION['user_id'])){
+                    //определяем имя личной таблицы пользователя
+                    $table_name = 'u'.$_SESSION['user_id'];
+        }
         //Добавляем слово в тезарус, если его там еще нет
         if (isset($property_arr['id'])){
             if(isset($property_arr['foreign']) && isset($property_arr['native']) && isset($property_arr['examples']) && isset($property_arr['frequency'])){
@@ -735,6 +739,7 @@ class Word{
                     $this->foreign = $row['foreign'];
                     $this->frequency = $row['frequency'];
                     $this->examples = $row['examples'];
+                    $this->lastData = $row['studDate'];
 
                     if (isset($property_arr['native'])){
                         $this->native = $row['native'].'\n'.$property_arr['native'];
@@ -836,7 +841,7 @@ class Word{
                     
                     //создаем запрос на получение данных из личной таблицы
                     $query = "SELECT * FROM $table_name WHERE `id` = $id;";
-                    $resFromPersonal = queryRun($query,'Ошибка при получении данных из персональной таблицы');
+                    $resFromPersonal = queryRun($query,'Ошибка  при получении данных из персональной таблицы ****'.$query);
                     //если в личной таблице еще нет этого слова
                     if (mysql_num_rows($resFromPersonal) == 0){
                         //добавляем слово в личную таблицу с установкой свойств объекта-слово
@@ -889,6 +894,7 @@ class Word{
                 $this->answers = 0;
                 $this->level = 0;
                 $this->examples = '';   
+                $this->lastData = time();
     }
     
     function getNative(){
