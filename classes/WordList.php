@@ -63,7 +63,8 @@ class StudList{
         
         if($strList !=''){
             $strList = $this->synchr($strList);
-            echo $strList;
+            
+            
 
             $query = "UPDATE users SET `studList` = '$strList' WHERE id = $user_id;";
 
@@ -794,9 +795,7 @@ class Word{
                     $this->answers = $row['answers'];
                     $this->shows = $row['shows'];
                     //$this->examples = $row['examples'];
-                    $this->stud = $studDate;
-                    echo '';
-                    
+                    $this->stud = $row['stud'];
                 }
             }
 
