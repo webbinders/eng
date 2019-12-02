@@ -1,28 +1,132 @@
 <?php
-
-function findBtnHandler(){
-    $resultFind = NULL;
-    //read values of fields
-    $foreign_box = trim($_POST['foreign_box']);
-    $native_box = trim($_POST['native_box']);
-    //если хотябы одно поле заполнено
-    if(strlen($foreign_box) || strlen($native_box)){
-        //если заполнены оба поля
-        if(strlen($foreign_box) && strlen($native_box)){
-            $resultFind = findForeingNativeRecordset($foreign_box, $native_box);
+//если нажата кнопка "Найти"
+if(isset($_POST['btnFind'])){
+    if(isset($_SESSION['find'])) unset($_SESSION['find']);
+    $result = findBtnHandler();
+    if($result){
+        $arrWords = resToArr($result);
+        //$strFindHTML = arrayToHTML($arrWords);
+        $_SESSION['find'] = serialize($arrWords);
+    }
+    //print_r($_SESSION['find']);
+}
+//если нажата кнопка "Добавить в список для изучения"
+if(isset($_POST['btnAdd'])){
+    
+    //$btnId = key($_POST['btnAdd']);
+    
+    $arrWords = unserialize($_SESSION['find']);
+    //var_dump($arrWords);
+    
+    //$arrWords[$btnId]->addToStudList();
+    $_SESSION['find'] = serialize($arrWords);
+}
+//если нажата кнопка "Удалить"
+if(isset($_POST['btnDel'])){
+    //определяем id нажатой кнопки
+    $wordId = key($_POST['btnDel']);
+    //echo $wordId.'<br>----------------------<br>';
+    if(isset($_SESSION['find'])){
+        $arrWords = unserialize ($_SESSION['find']);
+        //$_content='Запустить процедуру удаления элемента - '.$wordId;
+        //print_r($arrWords[$wordId]);
+        if($arrWords[$wordId]->delWord()){
+            $_content="Запись $wordId успешно удалена";
+            unset($_SESSION['find']);
+        }
+        
+    }
+    //print_r($_SESSION['find']);
+    //echo '<br>----------------------<br>';
+    //$_content='Запустить процедуру удаления єлемента - '.$wordId;
+    
+        
+    
+}
+/*
+ * Процедура удаления слова
+ */
+function delWord($word){
+    echo 'delWord($word)<br>';
+    $word->delWord();
+    print_r($word);
+    //удаляем слово из БД
+    $word->delWord();
+    //удаляем слово из массива $_SESSION['find']
+}
+/*
+ * Проверяет заполнение полей foreign формы
+ */
+function ForeignBoxToArray(){
+    $resArr = array();
+    foreach ($_POST['foreign_box'] as $key => $value) {
+        
+        if(strlen(trim($value))) {
+            $resArr[$key]['foreign_box'] = $value; 
+        }else{
+            $resArr[$key]['foreign_box'] = "";
+        }
+        
+        if(isset($_POST['asPart_chb'][$key])){
+            $resArr[$key]['asPart_chb']= 1;
         }
         else{
-            if(strlen($foreign_box)){
-                $resultFind = findForeingRecordset($foreign_box);
-            }else{
-                $resultFind = findNativeRecordset($native_box);
-            }
+            $resArr[$key]['asPart_chb']= 0;
         }
+            
+        
     }
+    
+    return $resArr;
+}
+function findBtnHandler(){
+    $resultFind = NULL;
+    $foreignArray = ForeignBoxToArray();
+
+    
+    $native = trim($_POST['native_box']);
+    //проверяем заполнение полей для английского
+    $foreign='';
+    foreach ($foreignArray as $key => $value) {
+        $foreign .= $value['foreign_box'];
+        
+    }
+    
+    //проверяем значения флажка "Учитывать порядок, чтобы передать его значение в функцию поиска
+    if (isset($_POST['chb_order'])) {
+        $order = 1;
+    }else {
+        $order = 0;
+
+    }
+    
+    if (strlen($foreign) || strlen($native)){
+        if (strlen($foreign) && strlen($native)){
+            //если заполнены оба поля
+             $resultFind = findForeignNativeRecordset($foreignArray,$order, $native);
+            
+        }else{
+            //если поля для английского заполнены (а для русского - нет)
+            if (strlen($foreign)){
+
+                $resultFind = findForeignRecordset($foreignArray,$order);
+                
+            }
+            //Если поле с переводом заполнено, с английским не заполнено
+            else {
+                $resultFind = findNativeRecordset($native);
+            }           
+           
+        }
+        
+    }
+
+
     return $resultFind;
 }
-function findForeingNativeRecordset($strForeing, $strNative){
-    $query = "SELECT * FROM thesaurus WHERE `foreign` LIKE '%$strForeing%' AND native LIKE '%$strNative%'"; 
+function findForeignNativeRecordset($arrForeign, $order, $strNative){
+    $queryForeign = buildQueryForForeign($arrForeign, $order);
+    $query = $queryForeign . " AND `native` LIKE '%$strNative%'";     
     return findRecordSet($query);
 }
 
@@ -32,8 +136,50 @@ function findRecordSet($query){
 
 }
 
-function findForeingRecordset($str){
-    $query = "SELECT * FROM thesaurus WHERE `foreign` LIKE '%$str%'"; 
+function buildQueryForForeign($arrParam, $order) {
+    $arrLike = array();
+    //если надо соблюдать последовательность
+    if ($order){
+        foreach ($arrParam as $key => $value) {
+            if($value['asPart_chb']){
+                $arrLike[] = '.*'.addslashes($value['foreign_box']).'.*';
+            }
+            else{
+                if(strlen($value['foreign_box'])>0){
+                    $arrLike[] ='.*' . "[[:<:]]".addslashes($value['foreign_box'])."[[:>:]]";
+                }
+                else{
+                    $arrLike[] = "";
+                }
+                
+            }
+        }
+        $query = "SELECT * FROM `thesaurus` WHERE `foreign` RLIKE '{$arrLike[0]} {$arrLike[1]}{$arrLike[2]}.*'";
+    }else{
+        //если не надо соблюдать последовательность
+        foreach ($arrParam as $key => $value){
+            if($value['asPart_chb']){
+                $arrLike[] ="LIKE '%".addslashes($value['foreign_box'])."%'";
+            }else{
+                if(strlen($value['foreign_box'])>0){
+                    $arrLike[] ="RLIKE '[[:<:]]".addslashes($value['foreign_box'])."[[:>:]]'";
+                }
+                else{
+                    $arrLike[] = "LIKE '%%'";
+                }
+                
+            }
+        }
+        $query = "SELECT * FROM `thesaurus` WHERE `foreign` {$arrLike[0]} AND `foreign`  {$arrLike[1]} AND `foreign`  {$arrLike[2]}";
+    }
+    
+    return $query;
+}
+
+function findForeignRecordset($arrParam, $order ){
+    
+    $query = buildQueryForForeign($arrParam, $order);
+
     return findRecordSet($query);
 
 }
@@ -44,30 +190,41 @@ function findNativeRecordset($str){
 
 }
 /*
- * Преобразовывает ссылку на ресурс, содержащий результаты поиска в строку HTML
+ * Преобразует ссылку на ресурс в массив объектов-слов
  */
-function resultToHTML($result){
-    $htmlStr = '';
-    if(mysql_num_rows($result)){
-        while ($row = mysql_fetch_array($result)){
-            //в соответствии с переданными параметрами устанавливаем свойства слова
-            $foreign = $row['foreign'];
-            $frequency = $row['frequency'];
-            $examples = $row['examples'];    
-            $native = $row['native'];                
-            $htmlStr .= word_as_html($foreign, $native, $examples);
+function resToArr($res){
+    $resArr = array();
+    if(mysql_num_rows($res)){
+        while ($row = mysql_fetch_array($res)){
+            $objWord = new Word($row);
+            $resArr[$objWord->id] =$objWord;
         
         }
-        return $htmlStr;
+        
+        return $resArr;
     }
- else {
-        return '<p>Поиск не дал результатов</p>';
-    }
+
 }
-function word_as_html($foreign, $native, $examples){
+/*
+ * Преобразовывает ссылку на ресурс, содержащий результаты поиска в строку HTML
+ */
+function arrayToHTML($wordArr){
+    $htmlStr = '';
+    if(sizeof($wordArr) > 0){
+        foreach ($wordArr as $key => $value) {
+            $id = $value->id;
+            $foreign = $value->foreign;
+            $native = $value->native;
+            $htmlStr .= word_as_html($id, $foreign, $native);
+        }
+    }
+    return $htmlStr;
+}
+function word_as_html($id, $foreign, $native, $examples){
     $html = "<div class = 'word'>";
     $html .= "<div class = 'foreign' >$foreign</div><br>";
     $html .= "<div class = 'native' >$native</div><br>";
+    $html .= "<button type = 'submit' name = 'stud_btn[{$id}]'> Добавить в список для изучения </button>";
     $html .= "</div>";
     return $html;
     

@@ -2,7 +2,8 @@
 
 //создаем объект формы
 include_once __DIR__ . '/../classes/class_form.php';
-
+if(isset($_SESSION['studList']))
+$studList =  unserialize($_SESSION['studList']);
 $stud_form = new HtmlForm(array(
     'class' => 'studing',
     'action' => './office.php',
@@ -16,7 +17,9 @@ if (isset($_POST['btn_start_stud']) ||
         isset($_POST['btn_wrong']) ||
         isset($_POST['btn_right']) ||
         isset($_POST['btn_view_example']) ||
-        isset($_POST['btn_show_native'])) {
+        isset($_POST['btn_show_native']) ||
+        isset($_POST['btn_stud']) && isset($_SESSION['studList'])
+        ) {
 
     //если нажата кнопка начать изучение
     //создаем текстовую область "Вопрос"
@@ -124,6 +127,8 @@ if (isset($_POST['btn_start_stud']) ||
     }
     //Если была нажата "Показать перевод примера"
     if (isset($_POST['btn_show_native'])) {
+         if (isset($_SESSION['studList']))
+                    $studList =  unserialize($_SESSION['studList']);
     //получаем из переменной список примеров
         include  __DIR__ . '/../forms/functions.php';
         dysplay_example($stud_form);    

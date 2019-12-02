@@ -45,15 +45,18 @@
             }
          
  }
+ 
  function dysplay_example($form){
 //получаем из переменной список примеров
         $exampleList = unserialize($_SESSION['exampleList']);
+         if (isset($_SESSION['studList']))
+                    $studList =  unserialize($_SESSION['studList']);
        //var_dump($exampleList);
         //определяем нажатую кнопку
         $btnId = key($_POST['btn_show_native']);
         if (isset($_POST['shown'])) $shownExample = unserialize ($_POST['shown']);
         //запоминаем нажатую кнопку в массиве
-        $shownExample[] = $btnId;
+        $shownExample[$btnId] = $btnId;
         //print_r($shownExample);
         
         //Для каждого элемента списка примеров
@@ -76,6 +79,8 @@
                     'type' => 'button',
                 ));
                 $form->addInputForm($btn_show_native);
+
+                
             } else {
                 //создаем параграф содержащий перевод
                 $p_native = new pElement(array(
@@ -84,6 +89,12 @@
                     'class' => 'native',
                 ));
                 $form->addInputForm($p_native);
+                if (isset($studList)){
+                    $studList->addWord($value);
+                }
+                else{
+                    $value->addToStudList();
+                }
             }
         }
         $serShownExample=serialize($shownExample);
@@ -93,4 +104,5 @@
         ));
         $form->addInputForm($shownArr);
         $_SESSION['exampleList'] = serialize($exampleList);
+        $_SESSION['studList'] = serialize($studList);
  }

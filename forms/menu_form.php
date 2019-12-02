@@ -38,6 +38,18 @@ $btn_stud = new ButtonElement(array(
 ));
 $menu_form ->addInputForm($btn_stud);
 
+$btn_search = new ButtonElement(array(
+    'id'=>'btn_search',
+    'formaction' => './office.php',
+    'value' => 'Поиск',
+    'name' => 'btn_search',
+    'type' => 'button',
+    'class' => ($_SESSION['mode'] == 'mode_search' && basename($_SERVER ['PHP_SELF'])  == 'office.php') ? 'active_mode' : 'mode',//в зависимости от выбранного режима подсвечиваем кнопку
+
+));
+$menu_form ->addInputForm($btn_search);
+
+
 
 
 $menu_form_str = $menu_form->toString();

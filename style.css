@@ -84,6 +84,7 @@ button:active{
 }
 nav button{
 	background: linear-gradient(to top, #3c8d89, #5bc9c5);
+        color: white;
 	/*background-color: #22b8b3;*/
 }
 nav button:hover{
@@ -278,4 +279,69 @@ button.active_mode{
 		right: 0;
 		
 	}
+}
+
+
+.div_found_box{
+    border-style: solid;
+    border-radius: 10px;
+    margin: 2px;
+    padding: 5px 10px;
+    border-color: #6eaa77;
+}
+
+.foreign{
+    border-bottom: #7cc669 solid 2px;
+    padding-right: 5px;
+    
+}
+.native{
+    border-left: #7cc669 solid 2px;
+    padding-left: 5px;
+    border-bottom: #7cc669 solid 2px;
+    
+}
+.foreign_section, .found_word{
+    display: flex;
+     flex-direction:row  ;
+     flex-wrap:wrap;
+}
+.head{
+    margin: 10px;
+    display: flex;
+     flex-direction: column ;
+}
+.div_word{
+      display: flex;
+     flex-direction: column ;  
+     
+      min-width: 50px;
+.div_word > .foreign_box{
+    
+    flex-basis: 50%;
+}
+}
+@media all and (max-width: 600px){
+    .foreign_section, .found_word{
+    display: flex;
+     flex-direction:row  ;
+     flex-wrap:wrap;
+}
+.head{
+    margin: 10px;
+    display: flex;
+     flex-direction: column ;
+}
+.div_word{
+      display: flex;
+     flex-direction: column ;  
+     
+      min-width: 50px;
+.div_word > .foreign_box{
+    
+    flex-basis: 50%;
+}
+}
+
+
 }

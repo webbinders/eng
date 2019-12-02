@@ -28,7 +28,18 @@ $btn_reset_text = new ButtonElement(array(
     'type' => 'button',
 ));
 
-    //создаем  объект абзаца для отображения читаемого текста'];
+    //создаем  текстовую область для отображения читаемого текста'];
+    if(isset($_POST['text_area']) || isset($_SESSION['text_area'])){
+        if(isset($_POST['text_area'])) {
+            $text= $_POST['text_area'];             
+        } 
+            else {
+                $text = $_SESSION['text_area'];                
+            }
+    }
+    else{
+        $text = '';
+    }
     $text_area = new TextAreaElement(array(
         'id' => 'text_area',
         'readonly' => 'readonly',
@@ -36,7 +47,7 @@ $btn_reset_text = new ButtonElement(array(
         'cols' => 50,
         'rows' => 10,
         'name' => 'text_area',
-        'value'=>isset($_POST['text_area'])? htmlentities($_POST['text_area']):'',
+        'value'=>$text,
         'placeholder' => "Скопируйте текст для чтения сюда<br>",
     ));
    
@@ -44,7 +55,7 @@ $btn_reset_text = new ButtonElement(array(
     //создаем скрытое поле для передачи читаемого текста в следующую загрузку страницы
     $hidden_text = new HiddenElement(array(
         'name'=>'text_area',
-        'value'=> isset($_POST['text_area'])? htmlentities($_POST['text_area']):'',
+        'value'=> htmlentities($text),
     ));
     $my_form->addInputForm($hidden_text); 
     
@@ -62,7 +73,7 @@ $word = new TextAreaElement(array(
     'value'=>isset($_POST['word'])?$_POST['word']:'',
     'placeholder' => "Скопируйте слово для перевода сюда<br>",
     'class' => !isset($_SESSION['dictionary']) ? 'hidden' : 'visible',
-    'readonly' => isset($_POST['btn_add']) || isset($_POST['btn_handling_text']) ? '' : 'readonly',
+    'readonly' => isset($_POST['btn_add']) || isset($_POST['btn_handling_text']) || isset($_POST['btn_read']) ? '' : 'readonly',
     
 ));
 
@@ -112,7 +123,7 @@ $trans_area = new TextAreaElement(array(
 
 
 //если форма запускается впервые или текст отображается впервые
-if (count($_POST) == 0 || isset($_POST['btn_reset_text']) || isset($_POST['btn_read']) || isset($_POST['text_area']) && ($_POST['text_area']=='')){
+if (count($_POST) == 0 || isset($_POST['btn_reset_text']) || isset($_POST['btn_read']) && !isset($_SESSION['text_area']) || isset($_POST['text_area']) && ($_POST['text_area']=='')){
     //создаем текстовую область для читаемого текста и добавляем ее на форму
     $text_area = new TextAreaElement(array(
         'id' => 'text_area',
@@ -140,6 +151,7 @@ if (isset($_POST['text_area']) && ($_POST['text_area']!='') && isset($_POST['btn
         || isset($_POST['btn_add']) 
         || isset($_POST['btn_view_example']) 
         || isset($_POST['btn_show_native'])
+        || isset($_POST['btn_read']) && isset($_SESSION['text_area'])
         ){
     //
     $my_form->addInputForm($text_area);

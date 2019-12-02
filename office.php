@@ -10,9 +10,10 @@
     
     $CRITERION_OF_REPETITION = 10*60*60;//10 часов
          
-
+    $user_id = $_SESSION['user_id'];
         
     $content = '';
+    //$strStudList = StudList::getOldStudList($user_id);
     if (!isset($_SESSION['mode']) || $_SESSION['mode'] == 'mode') {
         $_SESSION['mode']='mode_read';
     }
@@ -32,21 +33,27 @@
     if (isset($_POST['btn_stud']) || isset($_POST['btn_start_stud'])){
        
         
-        $_SESSION['mode'] = 'mode_stud';   
-        //определяем количество слов в старом списке для изучения
-        $query = "SELECT `studList` FROM `users` WHERE `id` = $_SESSION[user_id];";
-        $result = queryRun($query, "Error in time reading from 'users'<br> $query <br>");    
-        $strStudList = mysql_fetch_array($result);
-        if(strlen($strStudList['studList']) ){
-            $questionNumber = sizeof(explode(',',$strStudList['studList']));
+        $_SESSION['mode'] = 'mode_stud';  
+        if(!isset($studList) || !isset($_SESSION['studList'])){
+            //определяем количество слов в старом списке для изучения
+            /*
+            $query = "SELECT `studList` FROM `users` WHERE `id` = $_SESSION[user_id];";
+            $result = queryRun($query, "Error in time reading from 'users'<br> $query <br>");    
+             * 
+             */
+            $strStudList = StudList::getOldStudList($user_id);
+            if(strlen($strStudList) ){
+                $questionNumber = sizeof(explode(',',$strStudList));
 
-           
+
+            }
+            else{
+                $questionNumber =0;
+            }
+             $questionNumberMsg = "Уже в списке для изучения на сегодня имеется слов : $questionNumber <br>"
+                        . "Добавьте к ним некоторое количество новых вопросов<br>";            
         }
-        else{
-            $questionNumber =0;
-        }
-         $questionNumberMsg = "Уже в списке для изучения на сегодня имеется слов : $questionNumber <br>"
-                    . "Добавьте к ним некоторое количество новых вопросов<br>";
+
 
         
         
@@ -58,13 +65,19 @@
     
    
 switch ($_SESSION['mode']) {
+    //------------------
     case 'mode_search':
+    //------------------
         //если нажата кнопка "Найти"
-        if(isset($_POST['btnFind'])){
-            include_once 'forms/search_form_handler.php';
-            $result = findBtnHandler();
-            $content .= resultToHTML($result);
+        
+        //если нажата кнопка "Поиск", т.е. только вошли в режим, удаляем результаты прошлого поиска
+        if(isset($_POST['btn_search'])){
+            unset($_SESSION['find']);
+            if(isset($_SESSION['studList'])){
+                $studList = unserialize($_SESSION['studList']);
+            }
         }
+        //include_once 'forms/search_form_handler.php';
         include_once  'forms/search_form.php';
         $content .= $my_form ->toString();
         break;
@@ -79,7 +92,7 @@ echo'<br> --- dictionary---<br>';
 var_dump($dictionary);echo '<br>';*/
         }
 
-
+        if(isset($_POST['text_area']) && $_POST['text_area'] != '') $_SESSION['text_area'] = $_POST['text_area'];
         
         //нажата кнопка обработать текст
         if (isset($_POST['btn_handling_text']) && ($_POST['text_area'] != '')){
@@ -94,17 +107,28 @@ var_dump($dictionary);echo '<br>';*/
         if (isset($_POST['btn_reset_text'])  && ($_POST['text_area'] != '')){
             $table_name = 'u'.$_SESSION['user_id'];
             //var_dump($dictionary);
-               
+            
+            $strStud = StudList::getOldStudList($user_id);
+            $arrStudListId = explode(',', $strStud);
+            
+            
             foreach ($dictionary->wordsList as $word) {
                 //частота слова в тексте                
                 $frequency=$dictionary->wordFrequencyMap[htmlentities($word->foreign)];
-               
+               $interval = time() - $word->lastData ;
+               //echo $interval;
                 //если пользователь не смотрел перевод слова, считается что он его знает
-                if($word->stud ==0 ||( $word->stud == 1 && time() -$word->lastData > $CRITERION_OF_REPETITION)){
+                if($word->stud ==0 ||( $word->stud == 1 && ($interval > $CRITERION_OF_REPETITION))){
                     
-                    //$word->shows++;
+                    $word->answers += $word->frequency;
+                    $word->shows+= $word->frequency;
+                    $word->stud = 0;
+                    $key = array_search($word->id, $arrStudListId);
+                    if($key) unset ($arrStudListId[$key]);
+                        
+                  
                 }
-                $word->answers+=$frequency;
+                //$word->answers+=$frequency;
                 $answers = $word->answers;
                 $shows = $word->shows;
                 $level = $word->level = $answers / $shows;
@@ -116,8 +140,13 @@ var_dump($dictionary);echo '<br>';*/
                 
                  $result = queryRun($query,'Ошибка при обновлении личной таблицы ');
             }
+            $strId = implode(',', $arrStudListId);
+            $query ="UPDATE `users` SET `studList`='$strId' WHERE `id`= $user_id";
+            $result = queryRun($query,"Ошибка обновления таблицы `users` во время выполнения изменения списка для изучения"); 
+            
             $_POST['text_area'] = '';
             unset($_SESSION['dictionary']);
+            unset($_SESSION['text_area']);
             //var_dump($dictionary);
         }
         
@@ -130,6 +159,7 @@ var_dump($dictionary);echo '<br>';*/
             //получаем перевод слова
             $translate = $word->getNative();
             //добавляем слово в список для изучения
+            $word->stud = 1;
             $studList = $word->addToStudList();
             //Вставляем перевод в тестовое поле
             $_POST['trans_area'] = $translate;  
@@ -208,6 +238,11 @@ var_dump($dictionary);echo '<br>';*/
     case 'mode_stud':
     //---------------------
         $button = "non_button";
+        if(isset($_POST['btn_stud'])){
+             if (isset($_SESSION['studList'])){
+                    $studList =  unserialize($_SESSION['studList']);
+                }
+        }
         if(isset($_POST['btn_start_stud'])){
             //если нажата кнопка начать изучение
             //загружаем список для изучения
@@ -225,22 +260,19 @@ var_dump($dictionary);echo '<br>';*/
             }
             else{
                 $studList = new StudList($_POST['newQuestions']); 
+                $_SESSION['studList'] = serialize($studList);
                 //$button = 'btn_start_stud';
+                //$f=fopen('log.txt', 'a');
+                //fwrite($f, var_dump($studList));
             }
             
 
             //
         }
         else{
-            if (!isset($_POST['btn_stud'])){
-                if (isset($_SESSION['studList'])){
+            if (isset($_SESSION['studList']))
                     $studList =  unserialize($_SESSION['studList']);
-                }
-                else{
-                    $studList = new StudList(0);
-                }
             
-            }
         }
         if(isset($_POST['btn_ready'])){//если нажата кнопка "Готово"
             //
@@ -271,7 +303,7 @@ var_dump($dictionary);echo '<br>';*/
         //if(isset($studList)) $content .= var_dump($studList);
         }
         else{// если список для изучения пуст
-            if(strlen($strStudList['studList'])==0){//но при этом в таблице users за пользователем закреплен непустой список
+            if(!isset($strStudList) || strlen($strStudList)==0 ){//но при этом в таблице users за пользователем закреплен непустой список
                 /*
                  * не понятно, как такая ситуация вообще может возникать?
                  * Если в таблице users за пользователем закреплен непустой список, то список должен быть не пустым.
@@ -285,6 +317,7 @@ var_dump($dictionary);echo '<br>';*/
                 unset($_POST['btn_right']);
             }
             else{
+                if (isset($questionNumberMsg))
                 $content .= $questionNumberMsg;
             }
 
@@ -373,28 +406,35 @@ function testing($studList, $button){
             //---------------------------------------------   
             case 'btn_right'://нажата кнопка "Правильно"   |
             //---------------------------------------------
+            
+
+
                 //определяем временню метку текущего слова
                 $dateСurrentWord = $currentWord->lastData;
                 //определяем  временню метку слова
-                $currentWordTimestamp = getTimestamp($dateСurrentWord);
-                                
+                //$currentWordTimestamp = getTimestamp($dateСurrentWord);
+
+
+
                 $CRITERION_OF_REPETITION = 10*60*60;//10 часов
          
-                //если дата не сегодняшняя
+                //определяем текущую дату
                 $today =  time();
-                if($today - $currentWordTimestamp > $CRITERION_OF_REPETITION){
+               $interval = $today-$dateСurrentWord;
+                
+                //если дата не сегодняшняя
+                if($interval > $CRITERION_OF_REPETITION){
                     //удаляем слово из списка для изучения в БД
                     $currentWord->stud = 0;
-                    //echo '!!!!!!!!!!';
-                    
-                    
-                    
                     //echo sizeof($studList->studList).'-------<br>';
                     //Усстанавливаем текущую дату в свойство объекта-слово
-                    $currentWord->lastData = date("Y-m-d H:i:s",  time());
+                    $currentWord->lastData =  time();
                     //var_dump($studList);
                     unset($studList->repeteStudListID[$currentWord->id]);
                     
+                }
+                else{
+                    $currentWord->stud = 2;
                 }
                 //копируем значения текстовых областей в свойства
                 $currentWord->foreign = correct_foreign($_POST['question_text_area']);  
@@ -432,6 +472,8 @@ function testing($studList, $button){
                 else{
                     
                     $_SESSION['mode'] = 'mode_end_stud';
+                    unset($studList);
+                    unset($_SESSION['studList']);
                 }
 
                 break;
@@ -442,7 +484,7 @@ function testing($studList, $button){
                 if(!isset($_SESSION['currentWord'])) $currentWord = $studList->studList[$_SESSION['currentWord']];
                 //если дата не сегодняшняя                
                 //Устанавливаем текущую дату в свойство объекта-слово
-                $currentWord->lastData = date("Y-m-d H:i:s",  time());
+                $currentWord->lastData =  time();
                 //Увеличиваем на 1 свойство shows
                 $currentWord->shows++;
                 
@@ -452,7 +494,8 @@ function testing($studList, $button){
                 
                 //Обновляем запись для слова в БД
                 //Личная таблица
-                
+                if ($currentWord->answers == '') $currentWord->answers = 0;
+                if ($currentWord->stud == '') $currentWord->stud = 1;
                 $tableName = 'u'.$_SESSION['user_id'];
                 $query = "UPDATE $tableName SET "
                         . "`answers`=$currentWord->answers,"
@@ -462,13 +505,13 @@ function testing($studList, $button){
                         . "`stud`=$currentWord->stud "
                         . "WHERE `id`=$currentWord->id;";
                 
-                $result = queryRun($query,'Error in time update '.$tableName);
+                $result = queryRun($query,'Error in time update '.$tableName .' query = '.$query);
                 //тезарус
                 $foreign = addslashes($currentWord->foreign);
                 $native = addslashes($currentWord->native);
                 $query = "UPDATE `thesaurus` SET `foreign`='$foreign',`native`='$native' WHERE `id`=$currentWord->id";
                 //echo $query;
-                $result = queryRun($query,'Error in time update thesaurus');
+                $result = queryRun($query,'Error in time update thesaurus query = '.$query);
                 
 /*echo 'previos<br>';
                 $prevWord = prev($studList->studList);
@@ -580,7 +623,7 @@ function testing($studList, $button){
                 break;
         }
         //Передаем список для изучения как переменную сессии
-        $_SESSION['studList'] = serialize($studList);
+        if(isset($_SESSION['studList'])) $_SESSION['studList'] = serialize($studList);
         
         
        
