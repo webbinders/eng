@@ -1,0 +1,281 @@
+body{
+	margin: 0;
+	padding: 0;
+	background-color: #fef8ee;
+}
+.center-block{
+	max-width: 900px;
+	margin: 0 auto;
+}
+header{
+	font-size: 22px;
+	background-color: #90dba8;
+	overflow: hidden;
+	position: relative;	
+}
+.logo{
+	display: inline-block;
+	visibility: visible;
+}
+.logo p{
+	display: inline-block;
+	
+	margin: 15px 0;
+	color: #313473;
+}
+.logo img{
+	vertical-align: middle;
+	
+}
+#panelNav{		
+	float: right;
+	padding: 10px 0;
+
+}
+nav{
+	display: inline-block;
+}
+.autoriz{
+	float: right;
+	margin-left: 20px;
+	width: 240px;
+	/*background-color: #8fc094;*/
+	display: inline-block;
+}
+.autoriz div{
+	float: left;	
+	font-size: 16px;
+	font-weight: bolder;
+
+	color: #313473;
+	padding: 10px 0 10px 8px;
+	border-left: 2px solid #313473; 
+
+}
+.autoriz button{
+	float: right;
+	margin-left: 10px;
+}
+
+button{
+	font-size: 16px;
+	/*font-weight: bold;*/
+	padding: 5px;
+	border: 2px solid white;
+	color: white;
+	font-family: 'Comic Sans MS Italic';
+	background-color: #6eaa77;
+	margin-bottom: 10px;
+}
+button:hover{
+	background-color: #7cc669;
+}
+button:active{
+	background-color: #9fdd83;
+	color: #6eaa77;
+}
+
+.btn-autoriz{
+	
+	}
+.btn-autoriz:hover{
+	
+	
+}
+nav button{
+	background: linear-gradient(to top, #3c8d89, #5bc9c5);
+	/*background-color: #22b8b3;*/
+}
+nav button:hover{
+	background: linear-gradient(to top,  #3c8d89, #6ae6ce);
+}
+nav button:active{
+	color:  #224780;
+	background: #53d8c1;
+}
+
+section{
+	position: relative;
+	margin-top: 30px;
+	background-color: #e2f3c4;
+	padding: 10px 30px;
+	font-size: 1.2em;
+	color: #4f305c;
+	border-radius: 10px;
+	min-height: 70vh;
+}
+h1{
+	color: #7a326a;
+}
+h2{
+	font-size: 1.3em;
+	color: #7a326a;
+}
+.autorisation{
+	max-width: 200px; 
+	font-size: 1.2em;
+	margin: 30px auto 100px auto;
+
+}
+.autorisation input{
+	width: 100%;
+	margin-bottom: 15px;
+	box-sizing: border-box;
+	padding: 5px;
+}
+.reading{
+	width:100%;
+}
+.new{
+    text-shadow:2px 2px 4px rgba(0,0,0,0.5);
+}
+textarea{
+	padding: 10px;
+	font-size: 1.1rem;
+	border: 2px solid #95ae76;
+	color: #360038;
+	background-color: #fef8ee;
+	width: 97%;
+}
+textarea:nth-child(2){
+	height: 250px;
+}
+textarea:nth-child(4){
+	height: 1.3em;
+}
+textarea:nth-child(6){
+	height: 7.8em;
+}
+
+.reading label{
+	
+	font-family: 'Comic Sans MS Italic';	
+	font-size: 18px;
+	color: #224780;	
+	margin-bottom: 5px;
+}
+.btnSize{
+	border-top: 3px solid #eefddc;
+	border-left: 3px solid #eefddc;
+	border-bottom: 3px solid #5d88a9;	
+	background-color: #FFCC72;
+	color: #80006F;
+	margin: 5px 0;
+	padding: 3px 10px;
+}
+
+.btnSize:hover{
+	color: #FF6600;
+	background-color: #EAEE84; 
+}
+.btnSize:active{
+	border-top: 3px solid #5d88a9;
+	border-left: 3px solid #5d88a9;
+	border-bottom: 3px solid  #eefddc;
+	background-color: #F59E1D;
+	color: #224780;
+
+}
+#btn_reset_text{
+	position: absolute;
+	right: 32px;
+	top: 282px;
+	padding: 0px 5px;
+	border: 2px solid #95ae76;
+	color:  #be4800;
+
+	background-color: rgba(255,204,114,0.5);
+}
+#btn_reset_text:hover{
+		color: #F6FFC4;
+		background-color: rgb(255,204,114);
+}
+
+#btn_reset_text:active{
+	color: #FF6600;
+	background-color: #F6FFC4;
+}
+#boxBtn{
+	position: absolute;
+	top: -31px;
+	right: 30px;
+
+}
+#boxBtn button{
+	vertical-align: bottom;
+	border: 2px solid #fef8ee;
+	padding: 1px 7px;
+	font-weight: bold;
+}
+footer{
+	margin-top: 20px;
+	min-height: 70px;
+	background-color: #c0e6d1;
+	padding: 20px 0;
+}
+footer button{
+	background-color: #6077af;
+}
+button.active_mode{
+    
+    /*background-color: yellow; */   
+    text-decoration: underline;
+    padding: 5px;
+   
+    
+}
+#contacts{
+	font-size: 1.1em;
+	text-align: center;
+	color: #313473;
+}
+#contacts a{
+	text-decoration: none;
+	margin: 0 5px;
+	padding: 4px 7px;
+	
+	border: 2px solid #F3FCE0;
+	background-color: #85CDD5;
+}
+#contacts a:hover{
+	color: #F3FCE0;
+}
+@media screen and (max-width: 890px){
+	.logo{	
+		margin: 10px 0;
+	}
+	.logo p{		
+	display: none;
+	}
+	
+}
+@media screen and (max-width: 670px){
+	.logo{
+		
+		position: absolute;
+		top: 0;
+		left: 0;
+
+	}	
+	nav{
+		float: left;
+		margin-left: 30px;
+		margin-top: 5px; 
+	}
+}
+@media screen and (max-width: 450px){
+	nav{
+
+		margin-left: 0px;
+	}
+	button{
+		font-size: 0.65em;
+	}
+	section{
+		padding: 5px 10px;
+	}
+	#btn_reset_text{
+		right: 0;
+		
+	}
+}

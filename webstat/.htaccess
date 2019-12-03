@@ -1,0 +1,7 @@
+AuthType Basic
+AuthName "/www/eng.student.kr.ua/webstat"
+AuthUserFile /var/www/studentk/data/etc/85328195.passwd
+DirectoryIndex index.html
+<Limit GET POST>
+	require valid-user
+</Limit>

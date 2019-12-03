@@ -1,6 +1,7 @@
 <?php
 session_start();
 include_once 'server_connect.php'; //соединяемся с сервером БД
+//echo md5('murkica');
  
 if(md5($_SERVER['PHP_AUTH_PW'])==="6cf32f4cca135e47a01d8e706bd17f8f" and md5($_SERVER['PHP_AUTH_USER'])==="0408f3c997f309c03b08bf3a4bc7b730"){
     include './classes/pageClass.php'; //подключаем файл класса страницы

@@ -13,12 +13,12 @@ if(isset($_POST['btnFind'])){
 //если нажата кнопка "Добавить в список для изучения"
 if(isset($_POST['btnAdd'])){
     
-    //$btnId = key($_POST['btnAdd']);
+    $btnId = key($_POST['btnAdd']);
     
     $arrWords = unserialize($_SESSION['find']);
     //var_dump($arrWords);
     
-    //$arrWords[$btnId]->addToStudList();
+    $arrWords[$btnId]->addToStudList();
     $_SESSION['find'] = serialize($arrWords);
 }
 //если нажата кнопка "Удалить"
@@ -142,11 +142,11 @@ function buildQueryForForeign($arrParam, $order) {
     if ($order){
         foreach ($arrParam as $key => $value) {
             if($value['asPart_chb']){
-                $arrLike[] = '.*'.addslashes($value['foreign_box']).'.*';
+                $arrLike[] = '.*'.htmlentities(addslashes($value['foreign_box'])).'.*';
             }
             else{
                 if(strlen($value['foreign_box'])>0){
-                    $arrLike[] ='.*' . "[[:<:]]".addslashes($value['foreign_box'])."[[:>:]]";
+                    $arrLike[] ='.*' . "[[:<:]]".htmlentities(addslashes($value['foreign_box']))."[[:>:]]";
                 }
                 else{
                     $arrLike[] = "";
@@ -159,10 +159,10 @@ function buildQueryForForeign($arrParam, $order) {
         //если не надо соблюдать последовательность
         foreach ($arrParam as $key => $value){
             if($value['asPart_chb']){
-                $arrLike[] ="LIKE '%".addslashes($value['foreign_box'])."%'";
+                $arrLike[] ="LIKE '%".htmlentities(addslashes($value['foreign_box']))."%'";
             }else{
                 if(strlen($value['foreign_box'])>0){
-                    $arrLike[] ="RLIKE '[[:<:]]".addslashes($value['foreign_box'])."[[:>:]]'";
+                    $arrLike[] ="RLIKE '[[:<:]]".htmlentities(addslashes($value['foreign_box']))."[[:>:]]'";
                 }
                 else{
                     $arrLike[] = "LIKE '%%'";
@@ -172,6 +172,7 @@ function buildQueryForForeign($arrParam, $order) {
         }
         $query = "SELECT * FROM `thesaurus` WHERE `foreign` {$arrLike[0]} AND `foreign`  {$arrLike[1]} AND `foreign`  {$arrLike[2]}";
     }
+    
     
     return $query;
 }

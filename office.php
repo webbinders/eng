@@ -420,10 +420,10 @@ function testing($studList, $button){
          
                 //определяем текущую дату
                 $today =  time();
-               $interval = $today-$dateСurrentWord;
+               //$interval = $today-$dateСurrentWord;
                 
                 //если дата не сегодняшняя
-                if($interval > $CRITERION_OF_REPETITION){
+                if($today-$dateСurrentWord > $CRITERION_OF_REPETITION){
                     //удаляем слово из списка для изучения в БД
                     $currentWord->stud = 0;
                     //echo sizeof($studList->studList).'-------<br>';

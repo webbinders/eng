@@ -14,7 +14,7 @@
         }
         //echo 'Успешно соединились<br>';
         //выбираем базу данных
-        $db_name='eng';
+        $db_name='studentk_eng';
 
         //если не удалось выбрать базу 
         if (!mysql_select_db($db_name)) {
