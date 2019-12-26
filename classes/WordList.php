@@ -25,21 +25,29 @@ class StudList{
         
         $strNewStudList = $this->getNewStudList($user_id, $countNewWords);
         
-        //считываем старую составляющую списка для изучения            
+        //считываем старую составляющую текущего списка для изучения            
         $strOldStudList = $this->getOldStudList($user_id);
         if ($strOldStudList != '' && $strNewStudList != ''){
             
             
             $strOldStudList = trim($strOldStudList);
             
-             $strList = $strOldStudList.','.$strNewStudList;
+            $strList = $strOldStudList.','.$strNewStudList;
             
         }
-        elseif ($strNewStudList != '') {//значит пустая старая составляющая
+        elseif ($strNewStudList !== '') {//значит пустая старая составляющая
             
             $strList = $strNewStudList;
         }
         else{//значит пустая новая составляющая
+            if ($countNewWords < 0){
+                //если количество слов для изученя  пользователь выбрал меньше, чем он должен повторить
+                
+                $arrOldStudList = explode(',', $strOldStudList, $countNewWords);
+                
+                $strOldStudList = implode(',', $arrOldStudList);
+            }
+            
             $strList = $strOldStudList;
         }
         
@@ -50,8 +58,14 @@ class StudList{
             $strRepeteStudListID = StudList::getOldRepeteStudListID($user_id);
         }
         else{
-
-            $strRepeteStudListID = StudList::getOldRepeteStudListID($user_id).','.$strNewStudList;
+            $strOldStudList = StudList::getOldRepeteStudListID($user_id);
+            if($strOldStudList ==''){
+                $strRepeteStudListID = $strNewStudList;
+            }
+            else{
+                $strRepeteStudListID = $strOldStudList.','.$strNewStudList;
+            }
+            
         }
         $arrRepeteStudListID = explode(',', $strRepeteStudListID);
         foreach ($arrRepeteStudListID as  $id) {
@@ -62,18 +76,18 @@ class StudList{
              
         
         if($strList !=''){
-            $strList = $this->synchr($strList);
+            $strList = $this->synchr($strList, $tableName);
             
             
 
             $query = "UPDATE users SET `studList` = '$strList' WHERE id = $user_id;";
 
-            $result = queryRun($query, "ошибка при обновлении списка для изучения (таблица users");
+            $result = queryRun($query, "$query ошибка при обновлении списка для изучения (таблица users ");
 
             $query = "UPDATE $tableName SET stud = '1' WHERE id IN ($strList);";
             //echo $query;
 
-            $result = queryRun($query, "ошибка  при обновлении списка для изучения (таблица $tableName)");
+            $result = queryRun($query, " $query ошибка  при обновлении списка для изучения (таблица $tableName)");
 
             //Создаем запрос на выборку всех слов списка для изучения
             $query = "SELECT $tableName.*,thesaurus.* FROM $tableName INNER JOIN thesaurus ON  $tableName.id = thesaurus.id AND $tableName.id IN ($strList) ;" ;
@@ -134,14 +148,22 @@ class StudList{
      * Синхронизирует список для изучения с тезарусом.
      * Если слово по каким-то причинам отсутствует в тезарусе, оно должно отсутствовать в списке для изучения
      */
-    private function synchr($strList){
-        $query = "SELECT * FROM `thesaurus` WHERE id IN ($strList);";
-        $result = queryRun($query, "ошибка при чтении тезаруса");
-        $arrOldStudList=array();
-        while ($row = mysql_fetch_assoc($result)){
-            $arrOldStudList[$row['id']]=$row['id'];
+    private function synchr($strList,$tableName){
+        
+        $arrList = explode(',', $strList);
+        foreach ($arrList as $id){
+            $query = "SELECT * FROM `thesaurus` WHERE id = $id;";
+            $result = queryRun($query, "ошибка при чтении тезаруса");
+            if(! mysql_fetch_assoc($result)){
+                unset($arrList[$id]);
+                $query = "DELETE  FROM $tableName WHERE id = '$id';";
+                $result = queryRun($query, "Error in procedure synchr <br> query = $query");
+            }
+            
         }
-        $strList = implode(',', $arrOldStudList);
+        
+
+        $strList = implode(',', $arrList);
         
         return $strList;
 
@@ -149,36 +171,39 @@ class StudList{
             
     function getNewStudList($user_id, $count){
         $strNewStudList = '';
-        $remainingWords = $count;
-        $step = 0.01;
-        $tableName = 'u'.$user_id;
-        for($level = 0; $level <= 1 ; $level = $level + $step){
-            $top = $level + $step ;
-            //создаем запрос на определение заданного количества записей с наименьшим уровнем освоения
-            $query = "SELECT * FROM $tableName WHERE stud = 0 AND level BETWEEN $level  AND $top  LIMIT 0, $remainingWords";        
-            //выполняем запрос
-            //echo $query.'<br>';
-            $result = queryRun($query, "Сбой  при чтении из личной таблицы при составлении списка для изучения");
-            //echo 'mysql_num_rows($result)'.mysql_num_rows($result).'<br>';
-            if (mysql_num_rows($result)){
-                //создаем элементы массива с id полученных записей в качестве ключа
-                while ($word = mysql_fetch_assoc($result)){
-                    $studList[$word['id']] = $word['id']; 
-                    $this->repeteStudListID[$word['id']]=$word['id'];
-                } 
-                /*/устанавливаем для каждого элемента массива значение равное его ключу 
-                foreach ($studList as $key => $value) {
-                    $studList[$key] = $key;
-                } */
-                $sizeStudList = sizeof($studList);
-                if( $sizeStudList < $count){
-                    $remainingWords = $count - $sizeStudList;
-                }
-                else {
-                    $strNewStudList = implode(',', $studList);//строка содержащая id изучаемых слов разделенные запятыми
-                    //удаляем первую запятую(implode че-то вставляет разделитель в начало строки)
-                    $strNewStudList = trim(($strNewStudList)) ;
-                    break;
+        if($count>0){
+            
+            $remainingWords = $count;
+            $step = 0.01;
+            $tableName = 'u'.$user_id;
+            for($level = 0; $level <= 1 ; $level = $level + $step){
+                $top = $level + $step ;
+                //создаем запрос на определение заданного количества записей с наименьшим уровнем освоения
+                $query = "SELECT * FROM $tableName WHERE stud = 0 AND level BETWEEN $level  AND $top  LIMIT 0, $remainingWords";        
+                //выполняем запрос
+                //echo $query.'<br>';
+                $result = queryRun($query, "Сбой  при чтении из личной таблицы при составлении списка для изучения");
+                //echo 'mysql_num_rows($result)'.mysql_num_rows($result).'<br>';
+                if (mysql_num_rows($result)){
+                    //создаем элементы массива с id полученных записей в качестве ключа
+                    while ($word = mysql_fetch_assoc($result)){
+                        $studList[$word['id']] = $word['id']; 
+                        $this->repeteStudListID[$word['id']]=$word['id'];
+                    } 
+                    /*/устанавливаем для каждого элемента массива значение равное его ключу 
+                    foreach ($studList as $key => $value) {
+                        $studList[$key] = $key;
+                    } */
+                    $sizeStudList = sizeof($studList);
+                    if( $sizeStudList < $count){
+                        $remainingWords = $count - $sizeStudList;
+                    }
+                    else {
+                        $strNewStudList = implode(',', $studList);//строка содержащая id изучаемых слов разделенные запятыми
+                        //удаляем первую запятую(implode че-то вставляет разделитель в начало строки)
+                        $strNewStudList = trim(($strNewStudList)) ;
+                        break;
+                    }
                 }
             }
         }  
@@ -192,7 +217,8 @@ class StudList{
     function getRepeteStudListID($user_id){
         return $this->repeteStudListID;
     }
-    static function getOldRepeteStudListID($user_id){
+    static function getOldRepeteStudListID($user_id)
+    {
         $query = "SELECT studList FROM users WHERE id = $user_id;";
         $result = queryRun($query, "error in time reading table users");
         $strOldStudList = mysql_result($result,0,0);
@@ -201,9 +227,12 @@ class StudList{
     }
     /*
      * Возвращает массив id слов, которые на данный момент находятся в списке для изучения
-     * Список id слов у которых stud = 1. Дублируется в таблице users в виде строки содержащей id разделенные запятыми 
+     * хотя в личной таблице хранится список слов, которые надо будет  повторить завтра, 
+       т.е. те, которые сегодня уже повторялись, но с первого раза не засчитывались
+
      */
-    static function getOldStudList($user_id){
+    static function getOldStudList($user_id)
+    {
         
         $strOldStudList = StudList::getOldRepeteStudListID($user_id);
         if($strOldStudList!=''){

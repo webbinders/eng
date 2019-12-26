@@ -13,13 +13,13 @@ $stud_form = new HtmlForm(array(
 
 
 if (isset($_POST['btn_start_stud']) ||
-        isset($_POST['btn_ready']) ||
-        isset($_POST['btn_wrong']) ||
-        isset($_POST['btn_right']) ||
-        isset($_POST['btn_view_example']) ||
-        isset($_POST['btn_show_native']) ||
-        isset($_POST['btn_stud']) && isset($_SESSION['studList'])
-        ) {
+    isset($_POST['btn_ready']) ||
+    isset($_POST['btn_wrong']) ||
+    isset($_POST['btn_right']) ||
+    isset($_POST['btn_view_example']) ||
+    isset($_POST['btn_show_native']) ||
+    isset($_POST['btn_stud']) && isset($_SESSION['studList'])
+    ){
 
     //если нажата кнопка начать изучение
     //создаем текстовую область "Вопрос"
@@ -127,14 +127,15 @@ if (isset($_POST['btn_start_stud']) ||
     }
     //Если была нажата "Показать перевод примера"
     if (isset($_POST['btn_show_native'])) {
-         if (isset($_SESSION['studList']))
-                    $studList =  unserialize($_SESSION['studList']);
-    //получаем из переменной список примеров
-        include  __DIR__ . '/../forms/functions.php';
-        dysplay_example($stud_form);    
-    }
-} else {
-    //если еше не нажата кнопка "Начать изучение"
+        if (isset($_SESSION['studList']))
+            $studList =  unserialize($_SESSION['studList']);
+            //получаем из переменной список примеров
+            include  __DIR__ . '/../forms/functions.php';
+            dysplay_example($stud_form);    
+        }
+    } 
+    else {
+    /*если еще не нажата кнопка "Начать изучение"
     //создаем текстовое поле задающее количество новых вопросов
     $newQuestions = new TextElement(array(
         'id' => 'newQuestions',
@@ -144,6 +145,16 @@ if (isset($_POST['btn_start_stud']) ||
         'value' => isset($_POST['newQuestions']) ? $_POST['newQuestions'] : '7',
     ));
     $stud_form->addInputForm($newQuestions);
+    */
+    //создаем текстовое поле задающее общее количество вопросов
+    $testQuestions = new TextElement(array(
+        'id' => 'testQuestions',
+        'size' => 3,
+        'label' => 'Количество слов или фраз для повторения',
+        'name' => 'testQuestions',
+        'value' => isset($_POST['testQuestions']) ? $_POST['testQuestions'] : '12',
+    ));
+    $stud_form->addInputForm($testQuestions);
 
     $btn_start_stud = new ButtonElement(array(
         'id' => 'btn_start_stud',
@@ -153,5 +164,6 @@ if (isset($_POST['btn_start_stud']) ||
         'type' => 'button',
     ));
     $stud_form->addInputForm($btn_start_stud);
+
 }
 

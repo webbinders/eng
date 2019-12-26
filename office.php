@@ -28,6 +28,7 @@
         header("Location: http://".$_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF']).'/joining.php');
 
     }
+    //Установка/определение режима работы
     if (isset($_POST['btn_search'])) $_SESSION['mode'] = 'mode_search';
     if (isset($_POST['btn_read']) || !isset($_SESSION['mode'])) $_SESSION['mode'] = 'mode_read';
     if (isset($_POST['btn_stud']) || isset($_POST['btn_start_stud'])){
@@ -47,11 +48,9 @@
 
 
             }
-            else{
-                $questionNumber =0;
-            }
-             $questionNumberMsg = "Уже в списке для изучения на сегодня имеется слов : $questionNumber <br>"
-                        . "Добавьте к ним некоторое количество новых вопросов<br>";            
+
+             $questionNumberMsg = "Количество слов, которое вам надо закрепить : $questionNumber <br>"
+                        . "Вы можете выбрать любое число слов для изучения<br>";            
         }
 
 
@@ -246,8 +245,27 @@ var_dump($dictionary);echo '<br>';*/
         if(isset($_POST['btn_start_stud'])){
             //если нажата кнопка начать изучение
             //загружаем список для изучения
-            if ($_POST['newQuestions']=='') $_POST['newQuestions']=0;
-            if (preg_match('/\D/', $_POST['newQuestions'])) $_POST['newQuestions']=7;
+            if ($_POST['testQuestions']=='') {
+                if($questionNumber < 7){
+                    $_POST['testQuestions']=7;
+                }
+                else{
+                    $_POST['testQuestions']=$questionNumber;
+                }
+                
+            }
+                
+                
+            if (preg_match('/\D/', $_POST['testQuestions'])){
+                $_POST['testQuestions']=7;
+            }
+            else{
+                
+                    $_POST['newQuestions'] = $_POST['testQuestions']-$questionNumber;
+                
+  
+            }
+                    
             
             //определяем общее количество записей в личной таблице
             $query = "SELECT COUNT(*) FROM u".$_SESSION['user_id'].";";            
@@ -309,7 +327,7 @@ var_dump($dictionary);echo '<br>';*/
                  * Если в таблице users за пользователем закреплен непустой список, то список должен быть не пустым.
                  */
                 $content .= "<h1>Список для изучения пуст.</h1>"
-                            ."<p>Чтобы начать процедуру изучения-повторения новых слов, введите число новых вопросов.<br>"
+                            ."<p>Чтобы начать процедуру изучения-повторения новых слов, введите число слов или фраз для повторения.<br>"
                             ."и нажмите кнопку [Начать изучение]</p>";
                 unset($_POST['btn_start_stud']);
                 unset($_POST['btn_ready']);
