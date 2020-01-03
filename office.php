@@ -50,7 +50,9 @@
             }
 
              $questionNumberMsg = "Количество слов, которое вам надо закрепить : $questionNumber <br>"
-                        . "Вы можете выбрать любое число слов для изучения<br>";            
+                        . "Вы можете выбрать любое число слов для изучения<br>";    
+             
+
         }
 
 
@@ -268,22 +270,44 @@ var_dump($dictionary);echo '<br>';*/
                     
             
             //определяем общее количество записей в личной таблице
-            $query = "SELECT COUNT(*) FROM u".$_SESSION['user_id'].";";            
+            $persontab = 'u'.$_SESSION['user_id'];
+            $query = "SELECT COUNT(*) FROM $persontab;";            
             $res = queryRun($query, "Error in time counting");
             $row = mysql_fetch_row($res);
             $records =$row[0];
             
+            //если  общее количество записей в личной таблице меньше, чем требуется для изучения
             if($records < $_POST['newQuestions'] + $questionNumber){
                 $content .= "<h1>Недостаточно записей в вашем словаре. Сначала зайдите в режим чтения и проработайте текст</h1>";
             }
             else{
                 $studList = new StudList($_POST['newQuestions']); 
-                $_SESSION['studList'] = serialize($studList);
+                //$_SESSION['studList'] = serialize($studList);
                 //$button = 'btn_start_stud';
                 //$f=fopen('log.txt', 'a');
                 //fwrite($f, var_dump($studList));
             }
-            
+            if (sizeof($strStud) != $_POST['testQuestions']){
+                //echo '<h1>Колллизия!!!!!!</h1>';
+                $query = "DELETE $persontab FROM $persontab  LEFT JOIN `thesaurus` ON `thesaurus`.`id`= $persontab.`id` WHERE `thesaurus`.`id` IS NULL;";
+                $res = queryRun($query, "error in time deleting from $persontab $query");
+                
+                
+                $query = "SELECT id FROM $persontab WHERE stud>0;";            
+                $res = queryRun($query, "Error in time counting $query");
+                $arrId= array();
+                while ($row = mysql_fetch_row($res)){
+                    $arrId[] = $row[0];
+                }
+                $strId = implode(',', $arrId);
+                $query = "UPDATE `users` SET `studList`= '$strId' WHERE `id`=". $_SESSION['user_id'].";";
+                $res = queryRun($query, "error in time updating tabl users $query");
+                $studList = new StudList($_POST['newQuestions']); 
+                //$_SESSION['studList'] = serialize($studList);
+                //$_SESSION['mode']='mode';
+                
+            }
+            $_SESSION['studList'] = serialize($studList);
 
             //
         }
@@ -325,7 +349,13 @@ var_dump($dictionary);echo '<br>';*/
                 /*
                  * не понятно, как такая ситуация вообще может возникать?
                  * Если в таблице users за пользователем закреплен непустой список, то список должен быть не пустым.
+                 * 
+                 * Эта ситуация возникает, когда в списке для изучения остался идентификатор несуществующего слова, удаленного из тезаруса
+                 * Поэтому в этом месте обновляем список в  таблице пользователей в соответствии с личной таблией
                  */
+               // $_SESSION['mode'] = 'mode_end_stud';
+               /*echo '<h1>Колллизия!!!!!!</h1>';
+                $query = "";*/
                 $content .= "<h1>Список для изучения пуст.</h1>"
                             ."<p>Чтобы начать процедуру изучения-повторения новых слов, введите число слов или фраз для повторения.<br>"
                             ."и нажмите кнопку [Начать изучение]</p>";
