@@ -302,6 +302,7 @@ var_dump($dictionary);echo '<br>';*/
                 $strId = implode(',', $arrId);
                 $query = "UPDATE `users` SET `studList`= '$strId' WHERE `id`=". $_SESSION['user_id'].";";
                 $res = queryRun($query, "error in time updating tabl users $query");
+                $newQuestions = $_POST['testQuestions']-sizeof($arrId);
                 $studList = new StudList($_POST['newQuestions']); 
                 //$_SESSION['studList'] = serialize($studList);
                 //$_SESSION['mode']='mode';
