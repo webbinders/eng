@@ -302,7 +302,6 @@ var_dump($dictionary);echo '<br>';*/
                 $strId = implode(',', $arrId);
                 $query = "UPDATE `users` SET `studList`= '$strId' WHERE `id`=". $_SESSION['user_id'].";";
                 $res = queryRun($query, "error in time updating tabl users $query");
-                $newQuestions = $_POST['testQuestions']-sizeof($arrId);
                 $studList = new StudList($_POST['newQuestions']); 
                 //$_SESSION['studList'] = serialize($studList);
                 //$_SESSION['mode']='mode';
@@ -433,6 +432,7 @@ function testing($studList, $button){
             //--------------------------------------
             case 'btn_ready'://Если нажата "Готово"
             //---------------------------------------
+            
                  //Заполняем текстовую область "Ответ" свойством native
                 $native = $currentWord->getNative();
                 $currentWord->shows++;
@@ -469,10 +469,10 @@ function testing($studList, $button){
          
                 //определяем текущую дату
                 $today =  time();
-               //$interval = $today-$dateСurrentWord;
-                
+               $interval = $today-$dateСurrentWord;
+               
                 //если дата не сегодняшняя
-                if($today-$dateСurrentWord > $CRITERION_OF_REPETITION){
+                if($interval > $CRITERION_OF_REPETITION){
                     //удаляем слово из списка для изучения в БД
                     $currentWord->stud = 0;
                     //echo sizeof($studList->studList).'-------<br>';

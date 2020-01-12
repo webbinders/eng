@@ -125,7 +125,7 @@ class StudList{
                         $row['stud'] == '1';
                     if($row['stud'] == '1'){
                         $word = new Word($row);
-                        $this->addWord($word);
+                        $this->studList[$word->foreign]=$word;
                     }
                     //var_dump($row);
                     
